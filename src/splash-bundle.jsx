@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Redirect} from 'react-router-dom';
+import {redirect} from 'react-router-dom';
 
 import {Statusbar} from './ui';
 import {CancelSpinnerIcon, generatePath, abortableFetch} from './common';
@@ -254,7 +254,7 @@ class NewBundleButton extends Component {
   }
   render () {
     if (this.state.redirectBundleid) {
-      return (<Redirect to={generatePath(this.props.app.state.serverHost, this.state.redirectBundleid)}/>)
+      return (<redirect to={generatePath(this.props.app.state.serverHost, this.state.redirectBundleid)}/>)
     }
 
     var fileInput = null;

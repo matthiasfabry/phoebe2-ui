@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import {Redirect} from 'react-router-dom';
 
 import {Link, generatePath} from './common';
 
@@ -260,7 +259,7 @@ export class Tour extends Component {
   clearSettingsDismissed = () => {
     console.log("Tour.clearSettingsDismissed")
     this.setState({alreadyDismissed: []})
-    this.props.app.updateSetting('settingsDismissedTips': "")
+    this.props.app.updateSetting('settingsDismissedTips', "")
   }
   componentDidMount() {
     var settingsDismissedTips = this.props.app.state.settingsDismissedTips

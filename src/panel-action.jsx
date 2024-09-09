@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import {Redirect} from 'react-router-dom';
-import 'babel-polyfill';
+import {redirect} from 'react-router-dom';
 import cloneDeep from 'lodash/cloneDeep';
 
 
 import {toast} from 'react-toastify';
-import ToggleButton from 'react-toggle-button'; // https://www.npmjs.com/package/react-toggle-button
+import {ToggleButton} from '@asphalt-react/toggle-button';
 import Select from 'react-select'; // https://react-select.com/home
 import CreatableSelect from 'react-select/creatable'; // https://react-select.com/creatable
 import makeAnimated from 'react-select/animated';
@@ -935,7 +934,7 @@ export class ActionPanel extends Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<Redirect to={this.state.redirect}/>)
+      return (<redirect to={this.state.redirect}/>)
     }
 
     var action = this.props.action.split("_")[0];

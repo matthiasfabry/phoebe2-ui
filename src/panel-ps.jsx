@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import {Redirect} from 'react-router-dom';
-import 'babel-polyfill';
+import {redirect} from 'react-router-dom';
 
 import FlipMove from 'react-flip-move'; // https://github.com/joshwcomeau/react-flip-move
 import Select from 'react-select'; // https://react-select.com/home
@@ -248,7 +247,7 @@ class Parameter extends Component {
   // }
   render() {
     if (this.state.redirect) {
-      return (<Redirect to={this.state.redirect}/>)
+      return (<redirect to={this.state.redirect}/>)
     }
 
     if (['SelectParameter', 'SelectTwigParameter', 'FloatArrayParameter', 'DistributionParameter', 'ConstraintParameter'].indexOf(this.props.paramOverview.class)!==-1 && !this.state.expandedValue && !this.state.expandedUnit &&!this.state.expandedDetails && this.state.receivedDetails) {
@@ -890,7 +889,7 @@ class InputFloatArray extends Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<Redirect to={this.state.redirect}/>)
+      return (<redirect to={this.state.redirect}/>)
     }
 
     var btnStyle = {width: "calc(25% - 4px)", margin: "2px", textAlign: "center", lineHeight: "1em"}

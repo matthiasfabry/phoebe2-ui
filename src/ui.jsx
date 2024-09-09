@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Redirect} from 'react-router-dom';
+import {redirect} from 'react-router-dom';
 
 import {Link, randomstr, generatePath, getServerWarning} from './common';
 
@@ -161,7 +161,7 @@ export class Toolbar extends Component {
   }
   render() {
     if (this.state.redirect) {
-      return <Redirect to={this.state.redirect}/>
+      return <redirect to={this.state.redirect}/>
     }
 
     var divStyle = {position: "absolute", left: 0, top: 0, width: "100%", height: "50px"}

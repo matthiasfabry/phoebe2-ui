@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Redirect} from 'react-router-dom';
+import {redirect} from 'react-router-dom';
 
 import {Link, generatePath, abortableFetch, getServerWarning} from './common';
 
@@ -355,7 +355,7 @@ class ServerButton extends Component {
   render() {
     if (this.props.autoconnect && this.state.phoebeVersion && this.props.app.state.serverAllowAutoconnect && !this.state.status) {
       this.props.app.setState({serverAllowAutoconnect: false})
-      return <Redirect to={generatePath(this.props.location)}/>
+      return <redirect to={generatePath(this.props.location)}/>
     }
 
     var btnClassName = "btn btn-transparent"

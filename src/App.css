@@ -34,13 +34,12 @@ div.App {
 }
 
 div.splash-scrollable-header {
-  margin: auto;
   padding: 15px;
   width: 50%;
   height: 350px;
-  bottom: 0px;
+  bottom: 0;
   position: absolute;
-  margin-bottom: 50px;
+  margin: auto auto 50px;
   left: 25%;
 
   /* border-radius: 5px 5px 5px 5px;
@@ -60,7 +59,7 @@ div.splash-scrollable-header {
 @media screen and (min-width: 1200px) {
   div.splash-scrollable-header{
     width: 50%;
-    left: 25;
+    left: 25%;
     padding-left: 5%;
     padding-right: 5%;
   }

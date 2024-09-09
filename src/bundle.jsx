@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import {Redirect} from 'react-router-dom';
-import 'babel-polyfill';
+import { redirect } from 'react-router-dom';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // import 'react-toastify/dist/ReactToastify.min.css';
 
 // import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
-import PanelGroup from 'react-panelgroup'; // https://www.npmjs.com/package/react-panelgroup
+import {PanelGroup} from 'rsuite'; // https://www.npmjs.com/package/react-panelgroup
 import {arrayMove} from 'react-sortable-hoc';
 
 // will need to move to array-move if updating react-sortable-hoc, but
@@ -515,7 +514,7 @@ export class Bundle extends Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<Redirect to={this.state.redirect}/>)
+      return (<redirect to={this.state.redirect}/>)
     }
 
 

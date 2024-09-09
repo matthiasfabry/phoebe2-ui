@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Redirect} from 'react-router-dom';
+import {redirect} from 'react-router-dom';
 
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'; // https://github.com/clauderic/react-sortable-hoc
 
@@ -181,7 +181,7 @@ class FigureEditButton extends React.Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<Redirect to={this.state.redirect}/>)
+      return (<redirect to={this.state.redirect}/>)
     }
     return (
       <span style={{width: "24px"}} className="btn btn-tag btn-tag-clear" onClick={this.onClick} title='edit figure parameters'><span className='fas fa-fw fa-pen'></span></span>
@@ -212,7 +212,7 @@ class EditFigureTimeSourceButton extends React.Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<Redirect to={this.state.redirect}/>)
+      return (<redirect to={this.state.redirect}/>)
     }
     return (
       <span style={{maxWidth: "100%"}} className="btn btn-tag btn-tag-clear" onClick={this.onClick}><span className='fas fa-fw fa-clock'></span> edit times</span>
@@ -281,7 +281,7 @@ class FigureExpandButton extends React.Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<Redirect to={this.state.redirect}/>)
+      return (<redirect to={this.state.redirect}/>)
     }
     return (
       <span style={{width: "24px"}} className="btn btn-tag btn-tag-clear" onClick={this.onClick} title='view image in middle panel'><span className='fas fa-fw fa-expand'></span></span>

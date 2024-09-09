@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {Link as RouterLink, Router as BrowserRouter, HashRouter as RouterHashRouter} from 'react-router-dom';
-import 'babel-polyfill';
 
 import Select from 'react-select'; // https://react-select.com/home
 import makeAnimated from 'react-select/animated';

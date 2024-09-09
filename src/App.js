@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Switch, Route} from 'react-router-dom'
+import {Routes, Route} from 'react-router-dom'
 import './App.css';
 
 import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
@@ -21,7 +21,7 @@ import {NotFound} from './errors';
 const socketOptions = {
       reconnection: true,
       reconnectionAttempts: Infinity,
-      reconnectionDelay: 1 * 1000,
+      reconnectionDelay: 1000,
       reconnectionDelayMax: 10 * 1000,
       autoConnect: true,
       transports: ['websocket'],
@@ -255,7 +255,7 @@ class App extends ReactQueryParams {
     }
     return (
       <Router history={history} ref={this.router}>
-        <Switch>
+        <Routes>
           {/* NOTE: all Route components should be wrapped by a Server component to handle parsing the /:server (or lack there-of) and handing connecting/disconnecting to the websocket */}
           <Route exact path={public_url + '/'} render={(props) => <Server {...props} app={this}><SplashServer {...props} app={this}/></Server>}/>
           {/* <Route exact path={public_url + '/:clientid'} render={(props) => <Server {...props} app={this}><SplashServer {...props} app={this}/></Server>}/> */}
@@ -271,7 +271,7 @@ class App extends ReactQueryParams {
           <Route path={public_url + '/:server/:bundleid'} render={(props) => <Server {...props} app={this}><Bundle {...props} app={this}/></Server>}/>
           <Route path={public_url + '/:server'} render={(props) => <Server {...props} app={this}><SplashBundle {...props} app={this}/></Server>}/>
           <Route path="*" component={NotFound} />
-        </Switch>
+        </Routes>
       </Router>
     )
   }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Redirect} from 'react-router-dom';
+import {redirect} from 'react-router-dom';
 
 // import ReactQueryParams from 'react-query-params'; // https://github.com/jeff3dx/react-query-params
 
@@ -25,7 +25,7 @@ class TagHeaderButton extends Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<Redirect to={this.state.redirect}/>)
+      return (<redirect to={this.state.redirect}/>)
     }
     return (
       <a title={this.props.to} onClick={this.followLink} style={{width: "8px", padding: "2px", marginLeft: "8px"}}>
@@ -293,7 +293,7 @@ class TagGroup extends Component {
   }
   render() {
     // if (this.state.redirect) {
-    //   return (<Redirect to={this.state.redirect}/>)
+    //   return (<redirect to={this.state.redirect}/>)
     // }
 
     var group = this.props.title.toLowerCase()
