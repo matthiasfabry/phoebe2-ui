@@ -1,21 +1,27 @@
 import React, { Component } from 'react';
 import {redirect} from 'react-router-dom';
 
-import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'; // https://github.com/clauderic/react-sortable-hoc
-
-import {Link, generatePath, popUpWindow, randomstr} from './common';
+import {useSortable} from '@dnd-kit/sortable'; // https://github.com/clauderic/react-sortable-hoc
+import { CSS } from '@dnd-kit/utilities'
+import {MyLink, generatePath, popUpWindow, randomstr} from './common';
 import {Tour} from './tour';
 import {Panel} from './ui';
 
-const DragHandle = SortableHandle(() => <span className='fas fa-grip-lines' style={{paddingRight: "10px"}}/>); // This can be any component you want
+const DragHandle = (props) => {
+  const { id } = props;
+  const { listeners } = useSortable({ id });
+  return (
+    <span className='fas fa-grip-lines' style={{paddingRight: "10px"}} {...listeners}/>
+  );
+}; // This can be any component you want
 
 export class FigurePanel extends Component {
 
   popFigures = () => {
-    var bundleid = this.props.bundleid || this.props.match.params.bundleid
+    let bundleid = this.props.bundleid || this.props.match.params.bundleid
 
-    var url = generatePath(this.props.app.state.serverHost, bundleid, 'figures');
-    var win = popUpWindow(url, window.location.search);
+    let url = generatePath(this.props.app.state.serverHost, bundleid, 'figures');
+    let win = popUpWindow(url, window.location.search);
     // TODO: callback to remove from childrenWindows when manually closed?
     this.props.bundle.childrenWindows.push(win);
   }
@@ -61,21 +67,30 @@ export class FigurePanel extends Component {
 }
 
 
-const SortableFigureItem = SortableElement(({figure, app, bundle, FigurePanelOnly}) => {
+export const SortableFigureItem = ({figure, app, bundle, FigurePanelOnly}) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: figure.id });
+  let figureReady = (Object.keys(bundle.state.figureUpdateTimes).indexOf(figure) !== -1 && bundle.state.figureUpdateTimes[figure] !== 'failed')
 
-  var figureReady = (Object.keys(bundle.state.figureUpdateTimes).indexOf(figure) !== -1 && bundle.state.figureUpdateTimes[figure] !== 'failed')
-
-  var width = "100%"
-  var margin = "0px"
-  // var height = "auto";
+  let width = "100%"
+  let margin = "0px"
+  // let height = "auto";
   if (FigurePanelOnly) {
     width = "250px"
     margin = "10px"
     // height = "350px"
   }
+    // Apply the transform and transition from `useSortable` for dragging effects
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    marginLeft: margin,
+    marginRight: margin,
+    width: width,
+    float: "left"
+  };
 
   return (
-    <div className="phoebe-parameter" style={{marginLeft: margin, marginRight: margin, width: width, float: "left"}}>
+    <div className="phoebe-parameter" ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <DragHandle />
       {figure}
       <div className="ReactFigureActions">
@@ -118,9 +133,9 @@ const SortableFigureItem = SortableElement(({figure, app, bundle, FigurePanelOnl
 
     </div>
   );
-});
+};
 
-const SortableFigureList = SortableContainer(({figures, app, bundle, FigurePanelOnly}) => {
+const SortableFigureList = ({figures, app, bundle, FigurePanelOnly}) => {
   return (
     <ul style={{padding: "0px"}}>
       {figures.map((figure, index) => (
@@ -128,8 +143,7 @@ const SortableFigureList = SortableContainer(({figures, app, bundle, FigurePanel
       ))}
     </ul>
   );
-});
-
+};
 
 
 export class FigureThumb extends React.Component {
@@ -149,7 +163,7 @@ export class FigureThumb extends React.Component {
   }
   render() {
     // randomstr at end of URL forces the browser to reload the image instead of relying on cached version
-    var url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
     return (
       <div className="ReactFigureThumb">
         <img width="100%" src={url} onClick={this.onClick}></img>
@@ -228,11 +242,11 @@ class FigureMPLButton extends React.Component {
     };
   }
   onClick = () => {
-    var url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure_afig/'+this.props.figure
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure_afig/'+this.props.figure
 
     console.log("FigureMPLButton.onClick")
     if (this.props.app.state.isElectron) {
-      var autofigCmd = window.require('electron').remote.getGlobal('testAutofigInstalled')()
+      let autofigCmd = window.require('electron').remote.getGlobal('testAutofigInstalled')()
       if (autofigCmd !== null) {
         window.require('electron').remote.getGlobal('launchCommand')(autofigCmd+' '+url);
       } else {
@@ -241,7 +255,7 @@ class FigureMPLButton extends React.Component {
     } else {
       prompt("Install the dedicated desktop application to automatically launch an interactive matplotlib window.  If you have PHOEBE installed, paste the following into a terminal (if you have autofig installed but not PHOEBE, replace 'phoebe-autofig' with 'autofig'): ", 'phoebe-autofig '+url);
     }
-    // var spawn = require('child_process').spawn('mplshow', [url]);
+    // let spawn = require('child_process').spawn('mplshow', [url]);
     // spawn.on('error', function(err) {
       // alert('mplshow failed to launch');
     // });
@@ -261,8 +275,8 @@ class FigureExpandButton extends React.Component {
     };
   }
   onClick = (e) => {
-    // var url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
-    // var win = popUpWindow(url, window.location.search);
+    // let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    // let win = popUpWindow(url, window.location.search);
     // // TODO: callback to remove from childrenWindows when manually closed?
     // this.props.bundle.childrenWindows.push(win);
 
@@ -296,8 +310,8 @@ class FigurePopoutButton extends React.Component {
     };
   }
   onClick = (e) => {
-    var url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
-    var win = popUpWindow(url, window.location.search);
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let win = popUpWindow(url, window.location.search);
     // TODO: callback to remove from childrenWindows when manually closed?
     this.props.bundle.childrenWindows.push(win);
   }
@@ -318,8 +332,8 @@ class FigureSaveButton extends React.Component {
   onClick = () => {
     // console.log("FigureSaveButton clicked");
     alert("saving figures coming soon");
-    var url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
-    // var win = popUpWindow(url, window.location.search);
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    // let win = popUpWindow(url, window.location.search);
   }
   render() {
     return (
@@ -338,9 +352,9 @@ export class FigurePanelWidth extends React.Component {
     };
   }
   render() {
-    var app = this.props.app;
+    let app = this.props.app;
 
-    var figureReady = (this.props.figure && Object.keys(this.props.bundle.state.figureUpdateTimes).indexOf(this.props.figure) !== -1 && this.props.bundle.state.figureUpdateTimes[this.props.figure] !== 'failed')
+    let figureReady = (this.props.figure && Object.keys(this.props.bundle.state.figureUpdateTimes).indexOf(this.props.figure) !== -1 && this.props.bundle.state.figureUpdateTimes[this.props.figure] !== 'failed')
 
     if (!figureReady) {
       return(
@@ -351,7 +365,7 @@ export class FigurePanelWidth extends React.Component {
     }
 
 
-    var url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
 
 
     return (
@@ -370,13 +384,13 @@ export class FigureFullScreen extends React.Component {
     };
   }
   render() {
-    var app = this.props.app;
+    let app = this.props.app;
 
     if (this.props.figure==null) {
       return null;
     }
 
-    var url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
 
 
     return (

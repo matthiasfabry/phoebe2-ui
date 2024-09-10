@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import {Link as RouterLink, Router as BrowserRouter, HashRouter as RouterHashRouter} from 'react-router-dom';
+import {Link, BrowserRouter, HashRouter} from 'react-router-dom';
 
 import Select from 'react-select'; // https://react-select.com/home
 import makeAnimated from 'react-select/animated';
 const animatedComponents = makeAnimated();
 
-const Papa = require('papaparse'); // https://www.npmjs.com/package/papaparse
+import Papa from 'papaparse'; // https://www.npmjs.com/package/papaparse
 
 import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
 
@@ -14,7 +14,7 @@ import 'abortcontroller-polyfill';
 import {fetch} from 'whatwg-fetch';
 export const abortableFetch = ('signal' in new Request('')) ? window.fetch : fetch
 
-var versionCompare = require('semver-compare');  // function that returns -1, 0, 1
+let versionCompare = require('semver-compare');  // function that returns -1, 0, 1
 
 let BrowserWindow;
 if (isElectron()) {
@@ -28,17 +28,17 @@ export function isStaticFile() {
 }
 
 export function randomstr(N) {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let text = "";
+  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for (var i = 0; i < N; i++)
+  for (let i = 0; i < N; i++)
     text += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return text;
 }
 
 export function getServerWarning(phoebeVersion) {
-  var serverWarning = null
+  let serverWarning = null
   // If a client ever needs to raise a warning for an old version of the server
   // but doesn't quite justify raising serverMinVersion, that logic should go
   // here, based on this.state.phoebeVersion.
@@ -55,7 +55,7 @@ export function getServerWarning(phoebeVersion) {
 }
 
 export function generatePath(serverHost, bundleid, action, search) {
-  var url = "/"
+  let url = "/"
   // if (isStaticFile()) {prefix = "#"}
 
   if (serverHost) {
@@ -100,10 +100,10 @@ export function sameLists(_arr1, _arr2) {
   if (!Array.isArray(_arr1) || ! Array.isArray(_arr2) || _arr1.length !== _arr2.length)
     return false;
 
-  var arr1 = _arr1.concat().sort();
-  var arr2 = _arr2.concat().sort();
+  let arr1 = _arr1.concat().sort();
+  let arr2 = _arr2.concat().sort();
 
-  for (var i = 0; i < arr1.length; i++) {
+  for (let i = 0; i < arr1.length; i++) {
 
       if (arr1[i] !== arr2[i])
           return false;
@@ -132,7 +132,7 @@ export function popUpWindow(url, search) {
       url += search
     }
 
-    var windowName = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+    let windowName = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
     win = window.open(url,
                       windowName,
                       'height=400,width=600,left=50,top=20,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no');
@@ -159,40 +159,40 @@ export function filterObjectByKeys (object, keys) {
   }, {})
 }
 
-export class Router extends Component {
+export class MyRouter extends Component {
   render() {
     if (isStaticFile() || isElectron()) {
       return (
-        <RouterHashRouter {...this.props}>{this.props.children}</RouterHashRouter>
+        <HashRouter >{this.props.children}</HashRouter>
       )
     } else {
       return (
-        <BrowserRouter {...this.props}>{this.props.children}</BrowserRouter>
+        <BrowserRouter >{this.props.children}</BrowserRouter>
       )
     }
 
   }
 }
 
-export class Link extends Component {
+export class MyLink extends Component {
   render() {
-    var to = this.props.to
+    let to = this.props.to
     if (!to) {
       return (
-        <a {...this.props}>{this.props.children}</a>
+        <a >{this.props.children}</a>
       )
     }
     return (
-      <RouterLink {...this.props}>{this.props.children}</RouterLink>
+      <Link to={to}>{this.props.children}</Link>
     )
   }
 }
 
 export class Image extends Component {
   render() {
-    var src = processLink(this.props.src)
+    let src = processLink(this.props.src)
     return (
-      <img {...this.props} src={src}/>
+      <img src={src}/>
     )
   }
 }
@@ -214,8 +214,8 @@ export class CancelSpinnerIcon extends Component {
   render() {
     // onCancel
 
-    var classes = "fas fa-fw"
-    var style = {display: "inline-block", float: "left", marginTop: "4px", width: "20px", marginRight: "-20px", textAlign: "center", textDecoration: "none"}
+    let classes = "fas fa-fw"
+    let style = {display: "inline-block", float: "left", marginTop: "4px", width: "20px", marginRight: "-20px", textAlign: "center", textDecoration: "none"}
 
     style.pointerEvents = "all"
     if (this.state.hover) {
@@ -225,7 +225,7 @@ export class CancelSpinnerIcon extends Component {
     }
 
     return (
-      <span {...this.props} style={style} className={classes} onClick={this.onCancel} onMouseEnter={()=>{this.setState({hover:true})}} onMouseLeave={()=>{this.setState({hover:false})}}/>
+      <span style={style} className={classes} onClick={this.onCancel} onMouseEnter={()=>{this.setState({hover:true})}} onMouseLeave={()=>{this.setState({hover:false})}}/>
     )
   }
 }
@@ -233,15 +233,15 @@ export class CancelSpinnerIcon extends Component {
 export class Twig extends Component {
   render() {
 
-    var sliceIndex = this.props.twig.indexOf("@")
+    let sliceIndex = this.props.twig.indexOf("@")
 
     if (this.props.paramOverview && this.props.paramOverview.time) {
       // then we want to select on the second @
       sliceIndex += this.props.twig.slice(sliceIndex+1).indexOf("@") + 1
     }
 
-    var qualifier = this.props.twig.slice(0, sliceIndex);
-    var twigRemainder = this.props.twig.slice(sliceIndex);
+    let qualifier = this.props.twig.slice(0, sliceIndex);
+    let twigRemainder = this.props.twig.slice(sliceIndex);
 
     return (
       <span style={{marginLeft: "4px"}} title={this.props.title}>
@@ -265,43 +265,41 @@ export class FileReader extends React.Component {
     };
   }
 
-  onChangeDatasets
-
   handleChange = event => {
     const file =  event.target.files[0];
     this.setState({file: file});
     Papa.parse(file, {
       skipEmptyLines: true,
-      header: true,
       dynamicTyping: true,
       delimitersToGuess: [',', '\t', '|', ';', ' ', Papa.RECORD_SEP, Papa.UNIT_SEP],
       complete: this.updateData,
       header: true,
     });
   };
+
   componentDidMount() {
     this.setState({datasets: this.props.bundle.state.redirectArgs.datasets || []})
   }
 
   onChangeDatasets = (e) => {
-    var value = []
+    let value = []
     if (e) {
       value = e.map((item) => item.value)
     }
     this.setState({datasets: value})
   }
   updateData = (result) => {
-    var data = result.data;
+    let data = result.data;
     this.setState({parsedData: data, parsedColumns: Object.keys(data[0]), selectedColumns: {}});
   }
 
   selectColumn = (e, d, column) => {
     console.log(e)
     console.log(d)
-    var selectedColumns = this.state.selectedColumns
+    let selectedColumns = this.state.selectedColumns
     // e.value is uniqueid
     // e.label is uniquetwig
-    var value = null
+    let value = null
     if (e !== null) {
       value = e.value
     }
@@ -309,8 +307,8 @@ export class FileReader extends React.Component {
     this.setState({selectedColumns: selectedColumns})
 
     if (this.props.onUpdatePackets) {
-      var packets = []
-      var packet = {}
+      let packets = []
+      let packet = {}
       mapObject(this.state.selectedColumns, (k,v) => {
         packet = {uniqueid: v}
         packet.value = this.state.parsedData.map(dataRow => dataRow[k])
@@ -325,16 +323,16 @@ export class FileReader extends React.Component {
       return null
     }
 
-    var datasetChoices = []
+    let datasetChoices = []
     if (this.props.bundle.state.tags) {
       datasetChoices = this.props.bundle.state.tags.datasets || [];
     }
-    var datasetChoicesList = datasetChoices.map((choice) => ({value: choice, label: choice}))
-    var datasetList = this.state.datasets.map((choice) => ({value: choice, label: choice}))
+    let datasetChoicesList = datasetChoices.map((choice) => ({value: choice, label: choice}))
+    let datasetList = this.state.datasets.map((choice) => ({value: choice, label: choice}))
 
     // do we want to ignore sample_periods@bls_period@solver?
     const ignore = ['ld_coeffs', 'ld_coeffs_bol', 'xlim', 'ylim', 'zlim', 'compute_times', 'compute_phases', 'mask_phases'];
-    var availableParams = []
+    let availableParams = []
     mapObject(this.props.bundle.state.params, (uniqueid, param) => {
       if (param.class === 'FloatArrayParameter' && !param.readonly && param.component !== '_default' && ignore.indexOf(param.qualifier) === -1 && (this.state.datasets.length == 0 || this.state.datasets.indexOf(param.dataset) !== -1)) {
         availableParams.push({value: uniqueid, label: param.uniquetwig})

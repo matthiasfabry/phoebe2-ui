@@ -16,7 +16,7 @@ import {LogoSpinner} from './logo';
 
 // import FlipMove from 'react-flip-move'; // https://github.com/joshwcomeau/react-flip-move
 
-import {Link, Twig, generatePath, abortableFetch, mapObject, filterObjectByKeys, popUpWindow, FileReader} from './common';
+import {MyLink, Twig, generatePath, abortableFetch, mapObject, filterObjectByKeys, popUpWindow, FileReader} from './common';
 // import {LogoSpinner} from './logo';
 import {Panel} from './ui';
 import {Tag} from './panel-tags';
@@ -43,7 +43,7 @@ class ActionContentImport extends Component {
     const file = event.target.files[0];
     this.setState({file: file});
     // console.log(file)
-    var reader = new window.FileReader();
+    let reader = new window.FileReader();
     reader.onload = this.onLoadFileHandler;
     reader.readAsText(file, "UTF-8");
 
@@ -55,7 +55,7 @@ class ActionContentImport extends Component {
   }
 
   onChangeLabel = (inputValue, actionMeta) => {
-    var value = null
+    let value = null
     if (inputValue !== null) {
       value = inputValue.value
     }
@@ -63,15 +63,15 @@ class ActionContentImport extends Component {
     this.props.onUpdatePacket({[this.props.action.split('_')[1]]: value})
   }
   render() {
-    var addType = this.props.context;
+    let addType = this.props.context;
 
-    var labelChoices = [];
+    let labelChoices = [];
     if (addType === 'model') {
-      var labelChoices = this.props.bundle.state.tags.models || [];
+      let labelChoices = this.props.bundle.state.tags.models || [];
     } else if (addType === 'solution') {
-      var labelChoices = this.props.bundle.state.tags.solutions || [];
+      let labelChoices = this.props.bundle.state.tags.solutions || [];
     }
-    var labelChoicesList = labelChoices.map((choice) => ({value: choice, label: choice +' (overwrite)'}))
+    let labelChoicesList = labelChoices.map((choice) => ({value: choice, label: choice +' (overwrite)'}))
 
     return (
       <div>
@@ -126,7 +126,7 @@ class ActionContentAdd extends Component {
   //   this.props.onUpdatePacket({[this.props.action.split('_')[1]]: e.target.value})
   // }
   onChangeLabel = (inputValue, actionMeta) => {
-    var value = null
+    let value = null
     if (inputValue !== null) {
       value = inputValue.value
     }
@@ -134,24 +134,24 @@ class ActionContentAdd extends Component {
     this.props.onUpdatePacket({[this.props.action.split('_')[1]]: value})
   }
   render() {
-    var addType = this.props.action.split('_')[1]
-    var availableKinds = this.props.app.state.serverAvailableKinds[addType]
-    var availableKindsList = availableKinds.map((choice) => ({value: choice, label: choice}))
+    let addType = this.props.action.split('_')[1]
+    let availableKinds = this.props.app.state.serverAvailableKinds[addType]
+    let availableKindsList = availableKinds.map((choice) => ({value: choice, label: choice}))
 
     if (addType=='feature'){
-      var availableComponents = this.props.bundle.state.tags['components'] || ['']
-      var availableComponentsList = availableComponents.map((choice) => ({value: choice, label: choice}))
+      let availableComponents = this.props.bundle.state.tags['components'] || ['']
+      let availableComponentsList = availableComponents.map((choice) => ({value: choice, label: choice}))
 
-      var availableDatasets = this.props.bundle.state.tags['datasets'] || ['']
-      var availableDatasetsList = availableDatasets.map((choice) => ({value: choice, label: choice}))
+      let availableDatasets = this.props.bundle.state.tags['datasets'] || ['']
+      let availableDatasetsList = availableDatasets.map((choice) => ({value: choice, label: choice}))
 
       const contextsForFeatureKind = {'spot': ['component'], 'pulsation': ['component'], 'gaussian_process': ['dataset']}
-      var contextsForFeature = contextsForFeatureKind[this.state.kind] || ['component']
+      let contextsForFeature = contextsForFeatureKind[this.state.kind] || ['component']
     }
 
     if (this.state.kind===null) {
       // then defaults based on kind
-      var kind = {'dataset': 'lc', 'compute': 'phoebe', 'component': 'star', 'figure': 'dataset.lc'}[addType] || availableKinds[0]
+      let kind = {'dataset': 'lc', 'compute': 'phoebe', 'component': 'star', 'figure': 'dataset.lc'}[addType] || availableKinds[0]
       this.setState({kind: kind})
       this.props.onUpdatePacket({kind: kind})
     }
@@ -180,8 +180,8 @@ class ActionContentAdd extends Component {
     }
 
 
-    var labelChoices = this.props.bundle.state.tags[addType+'s'] || [];
-    var labelChoicesList = labelChoices.map((choice) => ({value: choice, label: choice +' (overwrite)'}))
+    let labelChoices = this.props.bundle.state.tags[addType+'s'] || [];
+    let labelChoicesList = labelChoices.map((choice) => ({value: choice, label: choice +' (overwrite)'}))
 
     return (
       <div>
@@ -243,7 +243,7 @@ class ActionContentAddDistribution extends Component {
     }
   }
   onChangeLabel = (inputValue, actionMeta) => {
-    var value = null
+    let value = null
     if (inputValue !== null) {
       value = inputValue.value
     }
@@ -262,21 +262,21 @@ class ActionContentAddDistribution extends Component {
   }
 
   render() {
-    var addType = this.props.action.split('_')[1]
+    let addType = this.props.action.split('_')[1]
 
-    var labelChoices = this.props.bundle.state.tags[addType+'s'] || [];
-    var labelChoicesList = labelChoices.map((choice) => ({value: choice, label: choice +' (add to existing)'}))
+    let labelChoices = this.props.bundle.state.tags[addType+'s'] || [];
+    let labelChoicesList = labelChoices.map((choice) => ({value: choice, label: choice +' (add to existing)'}))
 
-    var availableParamsList = []
+    let availableParamsList = []
     if (this.props.bundle.state.paramsAllowDist) {
       mapObject(this.props.bundle.state.paramsAllowDist, (uniqueid, twig) => {
           availableParamsList.push({value: uniqueid, label: twig})
         })
     }
 
-    var valueParamsList = this.state.parameters
+    let valueParamsList = this.state.parameters
     if (valueParamsList.length === 0) {
-      var defaultUniqueids = this.props.bundle.state.redirectArgs['uniqueids'] || null;
+      let defaultUniqueids = this.props.bundle.state.redirectArgs['uniqueids'] || null;
       if (defaultUniqueids !== null) {
         this.onChangeParameters(defaultUniqueids.map((uniqueid) => ({value: uniqueid, label: this.props.bundle.state.paramsAllowDist[uniqueid]})))
         this.props.bundle.setState({redirectArgs: {}})
@@ -322,9 +322,9 @@ class ActionContentRename extends Component {
     this.props.onUpdatePacket({['new_'+this.props.action.split('_')[1]]: e.target.value})
   }
   render() {
-    var renameType = this.props.action.split('_')[1]
-    var availableLabels = this.props.bundle.state.tags[renameType+'s'] || [];
-    var availableLabelsList = availableLabels.map((choice) => ({value: choice, label: choice}))
+    let renameType = this.props.action.split('_')[1]
+    let availableLabels = this.props.bundle.state.tags[renameType+'s'] || [];
+    let availableLabelsList = availableLabels.map((choice) => ({value: choice, label: choice}))
 
     if (this.state.labelOld===null) {
       // then defaults based on kind
@@ -369,13 +369,13 @@ class ActionContentRemove extends Component {
   }
 
   render() {
-    var removeType = this.props.action.split('_')[1]
-    var availableLabels = this.props.bundle.state.tags[removeType+'s'] || [];
-    var availableLabelsList = availableLabels.map((choice) => ({value: choice, label: choice}))
+    let removeType = this.props.action.split('_')[1]
+    let availableLabels = this.props.bundle.state.tags[removeType+'s'] || [];
+    let availableLabelsList = availableLabels.map((choice) => ({value: choice, label: choice}))
 
     if (this.state.label===null) {
       // then defaults based on kind
-      var defaultLabel = this.props.bundle.state.redirectArgs[removeType] || availableLabels[0]
+      let defaultLabel = this.props.bundle.state.redirectArgs[removeType] || availableLabels[0]
       this.setState({label: defaultLabel})
       this.props.onUpdatePacket({[removeType]: defaultLabel})
     }
@@ -410,7 +410,7 @@ class ActionContentRun extends Component {
     if (label === null || label === undefined) {
       return
     }
-    var context = this.props.action.split('_')[1]
+    let context = this.props.action.split('_')[1]
 
     console.log("requesting update to checksReport run_checks_"+context+"("+label+")")
 
@@ -447,7 +447,7 @@ class ActionContentRun extends Component {
     this.props.onUpdatePacket({[this.props.action.split('_')[1]]: e.value})
   }
   getNewType = () => {
-    var runType = this.props.action.split('_')[1]
+    let runType = this.props.action.split('_')[1]
     if (runType == 'compute') {
       return 'model'
     } else if (runType == 'solver') {
@@ -457,7 +457,7 @@ class ActionContentRun extends Component {
   }
 
   onChangeLabelNew = (inputValue, actionMeta) => {
-    var value = null
+    let value = null
     if (inputValue !== null) {
       value = inputValue.value
     }
@@ -472,26 +472,26 @@ class ActionContentRun extends Component {
   }
 
   render() {
-    var runType = this.props.action.split('_')[1]
-    var availableLabels = this.props.bundle.state.tags[runType+'s'] || [];
-    var availableLabelsList = availableLabels.map((choice) => ({value: choice, label: choice}))
+    let runType = this.props.action.split('_')[1]
+    let availableLabels = this.props.bundle.state.tags[runType+'s'] || [];
+    let availableLabelsList = availableLabels.map((choice) => ({value: choice, label: choice}))
 
     if (this.state.label===null) {
       // then defaults based on kind
-      var defaultLabel = this.props.bundle.state.redirectArgs[runType] || availableLabels[0]
+      let defaultLabel = this.props.bundle.state.redirectArgs[runType] || availableLabels[0]
       this.onChangeLabel({value: defaultLabel})
     }
 
-    var newType = this.getNewType();
+    let newType = this.getNewType();
 
     if (this.state.labelNew===null) {
       this.setState({labelNew: 'latest'})
       this.props.onUpdatePacket({[newType]: 'latest'})
     }
 
-    var labelNewChoices = cloneDeep(this.props.bundle.state.tags[newType+'s']) || [];
+    let labelNewChoices = cloneDeep(this.props.bundle.state.tags[newType+'s']) || [];
 
-    var labelNewValue = {value: this.state.labelNew, label: this.state.labelNew}
+    let labelNewValue = {value: this.state.labelNew, label: this.state.labelNew}
     // if (labelNewChoices.indexOf(this.state.labelNew) !== -1) {
       // TODO: don't incdlue (overwrite) if latest and doesn't yet exist
       // labelNewValue.label = this.state.labelNew + ' (overwrite)'
@@ -500,10 +500,10 @@ class ActionContentRun extends Component {
     if (labelNewChoices.indexOf('latest') === -1) {
       labelNewChoices.push('latest')
     }
-    var labelNewChoicesList = labelNewChoices.map((choice) => ({value: choice, label: choice +' (overwrite)'}))
+    let labelNewChoicesList = labelNewChoices.map((choice) => ({value: choice, label: choice +' (overwrite)'}))
 
 
-    var paramsFiltered = false
+    let paramsFiltered = false
     if (this.props.bundle.state.params !== null && this.state.label !== null) {
       paramsFiltered = this.props.bundle.filter(this.props.bundle.state.params, {context: [runType], [runType]: [this.state.label]}, [])
     }
@@ -555,7 +555,7 @@ class ActionContentAdopt extends Component {
     if (label === null || label === undefined) {
       return
     }
-    var context = this.props.action.split('_')[1]
+    let context = this.props.action.split('_')[1]
 
     console.log("requesting update to checksReport run_checks_"+context+"("+label+")")
 
@@ -596,7 +596,7 @@ class ActionContentAdopt extends Component {
     this.props.onUpdatePacket({['remove_'+this.props.action.split('_')[1]]: !value})
   }
   onChangeDistribution = (inputValue, actionMeta) => {
-    var value = null
+    let value = null
     if (inputValue !== null) {
       value = inputValue.value
     }
@@ -609,30 +609,30 @@ class ActionContentAdopt extends Component {
     })
   }
   render() {
-    var runType = this.props.action.split('_')[1]
-    var availableLabels = this.props.bundle.state.tags[runType+'s'] || [];
-    var availableLabelsList = availableLabels.map((choice) => ({value: choice, label: choice}))
+    let runType = this.props.action.split('_')[1]
+    let availableLabels = this.props.bundle.state.tags[runType+'s'] || [];
+    let availableLabelsList = availableLabels.map((choice) => ({value: choice, label: choice}))
 
     if (this.state.label===null) {
       // then defaults based on kind
-      var defaultLabel = this.props.bundle.state.redirectArgs[runType] || availableLabels[0]
+      let defaultLabel = this.props.bundle.state.redirectArgs[runType] || availableLabels[0]
       this.onChangeLabel({value: defaultLabel})
     }
 
-    var paramsFiltered = false
-    var adoptDistributions = true;
+    let paramsFiltered = false
+    let adoptDistributions = true;
     if (this.props.bundle.state.params !== null && this.state.label !== null) {
       paramsFiltered = this.props.bundle.filter(this.props.bundle.state.params, {context: ['solution'], solution: [this.state.label]}, [])
 
       // determine if adopt_distributions parameter is True or False
-      var paramsAdoptDistributions = this.props.bundle.filter(this.props.bundle.state.params, {context: ['solution'], solution: [this.state.label], qualifier: ['adopt_distributions']}, [])[0]
+      let paramsAdoptDistributions = this.props.bundle.filter(this.props.bundle.state.params, {context: ['solution'], solution: [this.state.label], qualifier: ['adopt_distributions']}, [])[0]
       if (paramsAdoptDistributions.length) {
         adoptDistributions = this.props.bundle.state.params[paramsAdoptDistributions[0]].valuestr === 'True'
       }
     }
 
-    var distributionChoices = this.props.bundle.state.tags.distributions || [];
-    var distributionChoicesList = distributionChoices.map((choice) => ({value: choice, label: choice +' (overwrite)'}))
+    let distributionChoices = this.props.bundle.state.tags.distributions || [];
+    let distributionChoicesList = distributionChoices.map((choice) => ({value: choice, label: choice +' (overwrite)'}))
 
 
 
@@ -707,7 +707,7 @@ class ActionContentExportArrays extends Component {
   }
 
   render() {
-    var availableParamsList = []
+    let availableParamsList = []
     if (this.props.bundle.state.params) {
       mapObject(this.props.bundle.state.params, (uniqueid, param) => {
         if (param.class === 'FloatArrayParameter' && ['dataset', 'model'].indexOf(param.context)!== -1 && param.len > 0 && param.qualifier.indexOf('ld_') === -1) {
@@ -716,7 +716,7 @@ class ActionContentExportArrays extends Component {
       })
     }
 
-    var valueParamsList = this.state.params
+    let valueParamsList = this.state.params
 
 
     return (
@@ -765,7 +765,7 @@ class ActionContentSettings extends Component {
     }
   }
   onChangeTerminalCmd = (inputValue, actionMeta) => {
-    var value = null
+    let value = null
     if (inputValue !== null) {
       value = inputValue.value
     }
@@ -773,7 +773,7 @@ class ActionContentSettings extends Component {
     this.props.app.updateSetting('terminal_cmd', value)
   }
   onChangePythonCmd = (inputValue, actionMeta) => {
-    var value = null
+    let value = null
     if (inputValue !== null) {
       value = inputValue.value
     }
@@ -781,7 +781,7 @@ class ActionContentSettings extends Component {
     this.props.app.updateSetting('python_cmd', value)
   }
   onChangePythonLoglevel = (inputValue, actionMeta) => {
-    var value = null
+    let value = null
     if (inputValue !== null) {
       value = inputValue.value
     }
@@ -789,27 +789,27 @@ class ActionContentSettings extends Component {
     this.props.app.updateSetting('python_loglevel', value)
   }
   componentDidMount () {
-    var terminal_cmd = this.props.app.getSettingFromStorage('terminal_cmd') || null
+    let terminal_cmd = this.props.app.getSettingFromStorage('terminal_cmd') || null
     if (terminal_cmd === null) {
       terminal_cmd = 'xterm -T PHOEBE -e'
       this.props.app.updateSetting('terminal_cmd', terminal_cmd)
     }
     this.setState({terminalCmd: terminal_cmd})
 
-    var python_cmd = this.props.app.getSettingFromStorage('python_cmd') || null
+    let python_cmd = this.props.app.getSettingFromStorage('python_cmd') || null
     if (python_cmd === null) {
       python_cmd = 'python3'
       this.props.app.updateSetting('python_cmd', python_cmd)
     }
     this.setState({pythonCmd: python_cmd})
 
-    var python_loglevel = this.props.app.getSettingFromStorage('python_loglevel') || 'warning'
+    let python_loglevel = this.props.app.getSettingFromStorage('python_loglevel') || 'warning'
     this.setState({pythonLoglevel: python_loglevel})
   }
   render() {
-    var terminalCmdOptions = ['paste', 'xterm -T PHOEBE -e', 'gnome-terminal -e'].map((choice) => ({value: choice, label: choice}))
-    var pythonCmdOptions = ['python', 'python2', 'python3', 'ipython', 'ipython2', 'ipython3'].map((choice) => ({value: choice, label: choice}))
-    var pythonLoglevelOptions = ['none', 'error', 'warning', 'info', 'debug'].map((choice) => ({value: choice, label: choice}))
+    let terminalCmdOptions = ['paste', 'xterm -T PHOEBE -e', 'gnome-terminal -e'].map((choice) => ({value: choice, label: choice}))
+    let pythonCmdOptions = ['python', 'python2', 'python3', 'ipython', 'ipython2', 'ipython3'].map((choice) => ({value: choice, label: choice}))
+    let pythonLoglevelOptions = ['none', 'error', 'warning', 'info', 'debug'].map((choice) => ({value: choice, label: choice}))
 
     return (
       <div>
@@ -860,7 +860,7 @@ export class ActionPanel extends Component {
     };
   }
   onUpdatePacket = (packetChanges) => {
-    var packet = this.state.packet
+    let packet = this.state.packet
     packet.bundleid = this.props.bundle.state.bundleid
     packet.method = this.props.action
     for (const [key, value] of Object.entries(packetChanges)) {
@@ -897,7 +897,7 @@ export class ActionPanel extends Component {
 
     if (['add', 'run'].indexOf(this.props.action.split('_')[0]) !== -1 || ['import_model', 'import_solution', 'adopt_solution'].indexOf(this.props.action) !== -1) {
       // then we go to another screen once we receive tmpFilter
-      var toastID = toast.info(this.props.action+" submitted... waiting for response", { autoClose: false, closeButton: false });
+      let toastID = toast.info(this.props.action+" submitted... waiting for response", { autoClose: false, closeButton: false });
       this.props.bundle.setState({pendingBundleMethod: toastID});
       this.setState({waiting: true});
     } else {
@@ -906,10 +906,10 @@ export class ActionPanel extends Component {
 
   }
   removeAction = () => {
-    var context = this.props.app.queryParams.tmp.split(',').slice(-1)[0].split(':')[0].replace('%22', '')
-    var packet = {method: 'remove_'+context}
+    let context = this.props.app.queryParams.tmp.split(',').slice(-1)[0].split(':')[0].replace('%22', '')
+    let packet = {method: 'remove_'+context}
     // NOTE: this makes very specific assumptions about the format of URL
-    var label = this.props.app.queryParams.tmp.split(':').slice(-1)[0].split('|').slice(-1)[0].replace('%22', '')
+    let label = this.props.app.queryParams.tmp.split(':').slice(-1)[0].split('|').slice(-1)[0].replace('%22', '')
     packet[context] = label.replace('%22', '')
     console.log("removeAction: ")
     console.log(packet)
@@ -920,7 +920,7 @@ export class ActionPanel extends Component {
   gotoAction = (newAction, newRedirectArgs={}) => {
     this.props.app.setQueryParams({tmp: []})
     this.props.bundle.setState({redirectArgs: newRedirectArgs})
-    var url = generatePath(this.props.app.state.serverHost, this.props.bundle.state.bundleid, newAction, this.props.app.getSearchString())
+    let url = generatePath(this.props.app.state.serverHost, this.props.bundle.state.bundleid, newAction, this.props.app.getSearchString())
     if (Object.keys(this.state.packet).length) {
       this.setState({packet: {}})
     }
@@ -937,12 +937,12 @@ export class ActionPanel extends Component {
       return (<redirect to={this.state.redirect}/>)
     }
 
-    var action = this.props.action.split("_")[0];
-    var context = this.props.action.split("_")[1];
-    var actionIcon = "fas fa-fw "
-    var actionContent = null
+    let action = this.props.action.split("_")[0];
+    let context = this.props.action.split("_")[1];
+    let actionIcon = "fas fa-fw "
+    let actionContent = null
 
-    var tmpFilter = this.props.app.queryParams.tmp !== undefined && this.props.app.queryParams.tmp.length;
+    let tmpFilter = this.props.app.queryParams.tmp !== undefined && this.props.app.queryParams.tmp.length;
 
     if (this.state.waiting) {
       if (tmpFilter) {
@@ -996,7 +996,7 @@ export class ActionPanel extends Component {
       // no actionIcon because we have a tmpFilter to show parameters
       if (tmpFilter) {
         // NOTE: this makes very specific assumptions about the format of URL
-        var figure = this.props.app.queryParams.tmp.split('|').slice(-1)[0].replace('%22', '')
+        let figure = this.props.app.queryParams.tmp.split('|').slice(-1)[0].replace('%22', '')
         // console.log(figure)
         actionContent = <React.Fragment>
                           <FigurePanelWidth app={this.props.app} bundle={this.props.bundle} figure={figure}/>
@@ -1007,7 +1007,7 @@ export class ActionPanel extends Component {
       // no actionIcon because we have a tmpFilter to show parameters
       if (tmpFilter) {
         // NOTE: this makes very specific assumptions about the format of URL
-        var figure = this.props.app.queryParams.tmp.split('|').slice(-1)[0].replace('%22', '')
+        let figure = this.props.app.queryParams.tmp.split('|').slice(-1)[0].replace('%22', '')
         // console.log(figure)
         actionContent = <React.Fragment>
                           <FigurePanelWidth app={this.props.app} bundle={this.props.bundle} figure={figure}/>
@@ -1033,16 +1033,16 @@ export class ActionPanel extends Component {
       actionContent = <ActionContentSettings app={this.props.app} bundle={this.props.bundle}/>
     }
 
-    var actionStyle = {margin: '5px'}
+    let actionStyle = {margin: '5px'}
     if (!this.state.actionActive) {
       actionStyle.pointerEvents = 'none'
       actionStyle.color = 'gray'
       actionStyle.borderColor = 'gray'
     }
 
-    var buttons = null
+    let buttons = null
     if (this.props.action === 'import_data') {
-      var hasPopulatedColumns = false
+      let hasPopulatedColumns = false
       for (const packet of this.state.packets) {
         if (packet.uniqueid !== null) {
           hasPopulatedColumns = true
@@ -1055,7 +1055,7 @@ export class ActionPanel extends Component {
     } else if (this.props.action === 'export_data') {
       buttons = <div style={{float: "right"}}>
                   <span onClick={this.closePanel} className="btn btn-primary" style={{margin: "5px"}} title={"cancel "+this.props.action+" and return to filtered parameters"}><span className="fas fa-fw fa-times"></span> cancel</span>
-                  <Link onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_arrays/'+this.props.bundle.state.bundleid+'/'+this.state.packet.uniqueids} download={this.props.bundle.state.bundleid+"_export_arrays.csv"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download file containing exported arrays"><span className="fas fa-fw fa-download"></span> export arrays</Link>
+                  <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_arrays/'+this.props.bundle.state.bundleid+'/'+this.state.packet.uniqueids} download={this.props.bundle.state.bundleid+"_export_arrays.csv"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download file containing exported arrays"><span className="fas fa-fw fa-download"></span> export arrays</MyLink>
               </div>
     } else if (['edit_figure', 'edit_figure_times', 'jobs'].indexOf(this.props.action) !== -1) {
       buttons = <div style={{float: "right"}}>
@@ -1099,12 +1099,12 @@ export class ActionPanel extends Component {
         buttons = <div style={{float: "right"}}>
                     <span onClick={this.closePanel} className="btn btn-primary" style={{margin: "5px"}} title={"cancel "+this.props.action+" and return to filtered parameters"}><span className="fas fa-fw fa-times"></span> cancel</span>
                     { this.props.action === 'run_compute' ?
-                      <Link onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_compute/'+this.props.bundle.state.bundleid+'/'+this.state.packet.compute+'/'+this.state.packet.model} download={this.props.bundle.state.bundleid+"_run_compute_"+this.state.packet.compute+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_model' to import the results."><span className="fas fa-fw fa-download"></span> download script</Link>
+                      <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_compute/'+this.props.bundle.state.bundleid+'/'+this.state.packet.compute+'/'+this.state.packet.model} download={this.props.bundle.state.bundleid+"_run_compute_"+this.state.packet.compute+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_model' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
                       :
                       null
                     }
                     { this.props.action === 'run_solver' ?
-                      <Link onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_solver/'+this.props.bundle.state.bundleid+'/'+this.state.packet.solver+'/'+this.state.packet.solution} download={this.props.bundle.state.bundleid+"_run_solver_"+this.state.packet.solver+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_solution' to import the results."><span className="fas fa-fw fa-download"></span> download script</Link>
+                      <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_solver/'+this.props.bundle.state.bundleid+'/'+this.state.packet.solver+'/'+this.state.packet.solution} download={this.props.bundle.state.bundleid+"_run_solver_"+this.state.packet.solver+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_solution' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
                       :
                       null
                     }

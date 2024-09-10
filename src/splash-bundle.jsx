@@ -17,8 +17,8 @@ export class SplashBundle extends Component {
     this.logoSplash = React.createRef();
   }
   render() {
-    var splashScrollableStyle = {display: "inline-block", textAlign: "center"}
-    var animationEffect = null;
+    let splashScrollableStyle = {display: "inline-block", textAlign: "center"}
+    let animationEffect = null;
 
     if (this.state.bundleLoading) {
       splashScrollableStyle.pointerEvents = 'none'
@@ -113,7 +113,7 @@ class NewBundleButton extends Component {
   loadBundle = (event) => {
     console.log("NewBundleButton.loadBundle");
 
-    var doFetch = true
+    let doFetch = true
     let fetchURL, fetchBody
 
     if (['load:phoebe2', 'load:legacy'].indexOf(this.props.type)!==-1) {
@@ -126,7 +126,7 @@ class NewBundleButton extends Component {
         // then coming from the onChange of the input
         fetchURL = "http://"+this.props.app.state.serverHost+"/open_bundle/"+this.props.type
 
-        var data = new FormData()
+        let data = new FormData()
         data.append('file', this.fileInput.current.files[0])
         data.append('clientid', this.props.app.state.clientid)
         data.append('client_version', this.props.app.state.clientVersion)
@@ -134,7 +134,7 @@ class NewBundleButton extends Component {
       }
     } else if (this.props.type === 'transfer') {
       fetchURL = "http://"+this.props.match.params.server+"/open_bundle"
-      var data = {json: this.props.app.state.bundleTransferJson, bundleid: this.props.match.params.bundleid, clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion}
+      let data = {json: this.props.app.state.bundleTransferJson, bundleid: this.props.match.params.bundleid, clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion}
       fetchBody = JSON.stringify(data)
     } else {
       fetchURL = "http://"+this.props.app.state.serverHost+"/new_bundle/"+this.props.type
@@ -257,12 +257,12 @@ class NewBundleButton extends Component {
       return (<redirect to={generatePath(this.props.app.state.serverHost, this.state.redirectBundleid)}/>)
     }
 
-    var fileInput = null;
+    let fileInput = null;
     if (['load:phoebe2', 'load:legacy'].indexOf(this.props.type)!==-1) {
       fileInput = <input id={"fileinput-"+this.props.type} type="file" ref={this.fileInput} style={{ display: 'none' }} onFocus={this.loadBundle} onChange={this.loadBundle}/>
     }
 
-    var loadingSpan = null;
+    let loadingSpan = null;
     if (this.state.bundleLoading) {
       loadingSpan = <CancelSpinnerIcon onCancel={this.abortLoadBundle} title="bundle loading (this can take some time... click to cancel)"/>
     }

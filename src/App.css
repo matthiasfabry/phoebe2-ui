@@ -96,8 +96,6 @@ div.splash-scrollable-header {
 div.splash-scrollable {
   overflow-y: auto;
   overflow-x: hidden;
-  padding-top: 10px;
-  padding: 8px;
   height: 100%;
   width: 100%;
 }
@@ -113,11 +111,8 @@ img {
 }
 
 .img-flip-vert {
-        -moz-transform: scaleY(-1);
-        -o-transform: scaleY(-1);
-        -webkit-transform: scaleY(-1);
         transform: scaleY(-1);
-        filter: FlipV;
+        filter: "FlipV";
         -ms-filter: "FlipV";
 }
 
@@ -202,9 +197,9 @@ code {
   -moz-box-shadow: 0px 4px 8px 0px rgba(69,101,131,0.75);
   box-shadow: 0px 4px 8px 0px rgba(69,101,131,0.75); */
 
-  -webkit-box-shadow: 0px 2px 5px 1px rgb(69, 101, 131);
-  -moz-box-shadow: 0px 2px 5px 1px rgb(69, 101, 131);
-  box-shadow: 0px 2px 5px 1px rgb(69, 101, 131);
+  -webkit-box-shadow: 0 2px 5px 1px rgb(69, 101, 131);
+  -moz-box-shadow: 0 2px 5px 1px rgb(69, 101, 131);
+  box-shadow: 0 2px 5px 1px rgb(69, 101, 131);
 
 
 
@@ -252,11 +247,10 @@ code {
 
 .btn-sub {
   color: #D6D6D6 !important;
-  margin-top: 0px;
+  margin-top: 0;
   padding: 4px;
-  border: 1px solid;
   border-radius: 4px;
-  border-color: transparent;
+  border: 1px solid transparent;
 }
 
 .btn-sub:hover {
@@ -280,9 +274,7 @@ code {
    background-color: transparent;
    color: #D6D6D6 !important;
    font-weight: 400;
-   border-width: 1px;
-   border-color: #D6D6D6;
-   border: 1px solid;
+   border: 1px solid #D6D6D6;
    box-shadow: none;
  }
 
@@ -291,7 +283,7 @@ code {
    text-decoration: none;
    color: #ffffff !important;
    border-color: #ffffff !important;
-   border-width: 1.2px;
+   border-width: 1px;
  }
 
 .btn-transparent-disabled, .btn-transparent-disabled:hover {
@@ -345,7 +337,7 @@ code {
   color: black;
   border: 1px solid transparent;
   /* box-shadow: 1px 1px 3px 0px #151516d6 */
-  box-shadow: inset 0.5px 0.5px 1px 0 rgba(21, 21, 22, 0.8392156862745098);
+  box-shadow: inset 1px 1px 1px 0 rgba(21, 21, 22, 0.8392156862745098);
 
 }
 
@@ -353,7 +345,7 @@ code {
   background-color: white;
   color: #2B71B1;
   /* border: 1px solid #2B71B1; */
-  box-shadow: 0.5px 0.5px 3px 0px rgba(21, 21, 22, 0.8392156862745098);
+  box-shadow: 1px 1px 3px 0 rgba(21, 21, 22, 0.8392156862745098);
 }
 
 .btn-tag-unavailable {
@@ -368,7 +360,7 @@ code {
 .btn-tag-disabled {
   /* used for constraint solve_for that are invalid */
   color: #525252;
-  box-shadow: 0px 0 2px 0 rgba(21, 21, 22, 0.8392156862745098);
+  box-shadow: 0 0 2px 0 rgba(21, 21, 22, 0.8392156862745098);
   cursor: default !important;
 }
 
@@ -378,8 +370,7 @@ code {
   width: 100%;
   /* overflow: hidden; */
   /* text-align: left; */
-  margin: 0;
-  margin-bottom: 10px;
+  margin: 0 0 10px;
 }
 
 .splash-scrollable .btn-transparent, .splash-scrollable .btn-transparent-disabled {
@@ -408,9 +399,9 @@ code {
   margin-top: 5px;
   border-radius: 4px;
 
-  -webkit-box-shadow: 0px 3px 3px 0px rgba(69,101,131,0.75);
-  -moz-box-shadow: 0px 3px 3px 0px rgba(69,101,131,0.75);
-  box-shadow: 0px 3px 3px 0px rgba(69,101,131,0.75);
+  -webkit-box-shadow: 0 3px 3px 0 rgba(69,101,131,0.75);
+  -moz-box-shadow: 0 3px 3px 0 rgba(69,101,131,0.75);
+  box-shadow: 0 3px 3px 0 rgba(69,101,131,0.75);
 }
 
 .phoebe-tag-header a {
@@ -438,9 +429,7 @@ code {
 
 .phoebe-parameter {
   width: calc(100% - 20px);
-  margin: auto;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  margin: 10px auto;
   min-height: 30px;
   padding-top: 3px;
   padding-left: 10px;
@@ -449,9 +438,9 @@ code {
   color: black;
   border-radius: 4px;
 
-  -webkit-box-shadow: 1px 1px 4px 0px rgba(69,101,131,0.75);
-  -moz-box-shadow: 1px 1px 4px 0px rgba(69,101,131,0.75);
-  box-shadow: 1px 1px 4px 0px rgba(69,101,131,0.75);
+  -webkit-box-shadow: 1px 1px 4px 0 rgba(69,101,131,0.75);
+  -moz-box-shadow: 1px 1px 4px 0 rgba(69,101,131,0.75);
+  box-shadow: 1px 1px 4px 0 rgba(69,101,131,0.75);
 
 }
 
@@ -484,9 +473,9 @@ code {
   border-radius: 4px;
   border: 1px solid rgba(69,101,131,1);
 
-  -webkit-box-shadow: 4px 4px 8px 0px rgba(69,101,131,0.75);
-  -moz-box-shadow: 4px 4px 8px 0px rgba(69,101,131,0.75);
-  box-shadow: 4px 4px 8px 0px rgba(69,101,131,0.75);
+  -webkit-box-shadow: 4px 4px 8px 0 rgba(69,101,131,0.75);
+  -moz-box-shadow: 4px 4px 8px 0 rgba(69,101,131,0.75);
+  box-shadow: 4px 4px 8px 0 rgba(69,101,131,0.75);
 
   color: #D6D6D6;
 }
@@ -528,7 +517,7 @@ code {
 }
 
 .phoebe-parameter-select__value-container {
-  margin-top: 0px !important;
+  margin-top: 0 !important;
 }
 
 

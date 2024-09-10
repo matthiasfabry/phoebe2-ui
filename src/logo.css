@@ -1,9 +1,7 @@
 .PhoebeLogo {
   display: block;
   overflow: visible;
-  margin: auto;
-  margin-top: 50px;
-  margin-bottom: 50px;
+  margin: 50px auto;
   width: 136px; /* allows auto-centering */
   height: 260px;
   box-sizing: border-box;
@@ -20,7 +18,7 @@
 .PLT, .PLTB, .PLTT {
   position: relative;
   height: 75px;
-  width: 64.5px;
+  width: 65px;
 }
 
 .PLTB, .PLTT {
@@ -70,7 +68,7 @@
 
 /* left offset for columns */
 .PLT1, .PLT2, .PLT6, .PLT7, .PLT8 {
-  left: 0px;
+  left: 0;
 }
 
 .PLT3, .PLT4, .PLT5 {

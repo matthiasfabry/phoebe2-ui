@@ -42,7 +42,7 @@ if (options.argv.version) {
 }
 
 if (options.argv.u) {
-  var u = path.join(__dirname, '/../build/index_static.html')
+  let u = path.join(__dirname, '/../build/index_static.html')
   if (options.argv.f) {
     u += "?"+options.argv.f
   }
@@ -95,7 +95,7 @@ const BrowserWindow = electron.BrowserWindow;
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-var showExitPrompt = true;
+let showExitPrompt = true;
 
 function createWindow() {
     // Create the browser window.
@@ -112,9 +112,10 @@ function createWindow() {
     // and load the index.html of the app.
     const startUrl = process.env.ELECTRON_START_URL || url.format({
             pathname: path.join(__dirname, '/../build/index.html'),
-            protocol: 'file:',
+            protocol: 'file://',
             slashes: true
         });
+    console.log(startUrl)
     mainWindow.loadURL(startUrl);
     // Open the DevTools.
     // mainWindow.webContents.openDevTools();
@@ -128,8 +129,8 @@ function createWindow() {
           fetch("http://localhost:"+global.pyPort+"/info")
             .then(res => res.json())
             .then(json => {
-              var choice = 0
-              var connectedClients = json.data.clients.filter(client => client !== global.clientid)
+              let choice = 0
+              let connectedClients = json.data.clients.filter(client => client !== global.clientid)
               if (connectedClients.length > 0 && !options.argv.c) {
                 // TODO: only show this if there are clients connected to the server.  Will need to have all clients subscribe and then have the server return the clientids in this fetch.
                 choice = electron.dialog.showMessageBoxSync(
@@ -228,9 +229,9 @@ const electronPrompt = (title, label, value, width) => {
 global.electronPrompt = electronPrompt;
 
 const launchCommand = (cmd) => {
-  cmd0 = cmd.split(' ')[0];
-  args = cmd.split(' ').slice(1);
-  return child_process.spawn(cmd0, args);
+    let cmd0 = cmd.split(' ')[0];
+    let args = cmd.split(' ').slice(1);
+    return child_process.spawn(cmd0, args);
 }
 global.launchCommand = launchCommand;
 
@@ -240,10 +241,10 @@ const executeJSwithUserGesture = (code) => {
 global.executeJSwithUserGesture = executeJSwithUserGesture;
 
 function randomstr(N) {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let text = "";
+  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for (var i = 0; i < N; i++)
+  for (let i = 0; i < N; i++)
     text += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return text;
@@ -261,7 +262,7 @@ const selectPort = () => {
 }
 
 const testAutofigInstalled = () => {
-  ret = child_process.spawnSync('phoebe-autofig');
+  let ret = child_process.spawnSync('phoebe-autofig');
   if (ret.stdout!==null) {
     return 'phoebe-autofig';
   };

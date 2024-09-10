@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
-import {Routes, Route} from 'react-router-dom'
+import {Routes, Route, useParams} from 'react-router-dom'
 import './App.css';
 
 import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
 import SocketIO from 'socket.io-client'; // https://www.npmjs.com/package/socket.io-client
-
 // NOTE: currently use a local version until PR is accepted, in which case we can lose the ./ and update the version requirements in package.json
 // local version now also includes a getSearchString() which we'd have to rewrite if using the dependency
 import ReactQueryParams from './react-query-params'; // https://github.com/jeff3dx/react-query-params
 
 import {history} from './history'
-import {Router, isStaticFile, randomstr, generatePath} from './common'
+import {MyRouter, isStaticFile, randomstr, generatePath} from './common'
 import {SplashBundle} from './splash-bundle';
-import {SplashServer} from './splash-server';
+import SplashServer from './splash-server';
 // import {SettingsServers, SettingsBundles} from './settings';
 import {Bundle} from './bundle';
 // import {PSPanel} from './panel-ps';
@@ -48,7 +47,7 @@ class App extends ReactQueryParams {
       settingsDismissedTips: [],
       allowDisconnectReadonly: false,
       clientVersion: '1.0.1', // UPDATE ON NEW RELEASE, also update package.json.version to match
-      serverMinVersion: '2.3.0',  // UPDATE ON NEW RELEASE - any warnings need to go in common.getServerWarning
+      serverMinVersion: '2.4.0',  // UPDATE ON NEW RELEASE - any warnings need to go in common.getServerWarning
       latestClientVersion: null, // leave at null, updated by getLatestClientVersion
       latestServerVersion: null, // leave at null, updated by getLatestServerVersion
       clientWarning: null, // leave at null, will be set when connected to a server, serverWarning can be checked on the fly via common.getServerWarning(serverPhoebeVersion)
@@ -57,7 +56,7 @@ class App extends ReactQueryParams {
     this.socket = null;
   }
   clearQueryParams = () => {
-    var newQueryParams = {}
+    let newQueryParams = {}
     Object.keys(this.queryParams).forEach( k => {
         newQueryParams[k] = [];
     })
@@ -66,7 +65,7 @@ class App extends ReactQueryParams {
     // window.location.search = "";
   }
   getSettingFromStorage = (k) => {
-    return window.localStorage.getItem(k, null)
+    return window.localStorage.getItem(k)
   }
   updateSetting = (k,v) => {
     console.log("App.updateSetting "+k+"="+v)
@@ -88,7 +87,7 @@ class App extends ReactQueryParams {
     }
   }
   componentDidMount() {
-    var stateisElectron = isElectron();
+    let stateisElectron = isElectron();
     this.setState({isElectron: stateisElectron})
     let defaultServerHosts;
     if (stateisElectron) {
@@ -98,11 +97,11 @@ class App extends ReactQueryParams {
       defaultServerHosts = "server.phoebe-project.org"
     }
 
-    var settingsServerHosts = this.getSettingFromStorage('settingsServerHosts') || defaultServerHosts
+    let settingsServerHosts = this.getSettingFromStorage('settingsServerHosts') || defaultServerHosts
     if (settingsServerHosts) {
       this.setState({settingsServerHosts: settingsServerHosts.split(',')});
     }
-    var settingsDismissedTips = this.getSettingFromStorage('settingsDismissedTips') || null
+    let settingsDismissedTips = this.getSettingFromStorage('settingsDismissedTips') || null
     if (settingsDismissedTips) {
       this.setState({settingsDismissedTips: settingsDismissedTips.split(',')});
     }
@@ -187,7 +186,7 @@ class App extends ReactQueryParams {
       });
     }
   serverConnect = (server) => {
-    var serverHost = server || this.props.match.params.server
+    let serverHost = server || this.props.match.params.server
 
     if (this.queryParams.disconnect) {
       return
@@ -253,26 +252,27 @@ class App extends ReactQueryParams {
     } else {
       public_url = process.env.PUBLIC_URL
     }
+    console.log("in app render: ", public_url)
     return (
-      <Router history={history} ref={this.router}>
+      <MyRouter history={history} ref={this.router}>
         <Routes>
           {/* NOTE: all Route components should be wrapped by a Server component to handle parsing the /:server (or lack there-of) and handing connecting/disconnecting to the websocket */}
-          <Route exact path={public_url + '/'} render={(props) => <Server {...props} app={this}><SplashServer {...props} app={this}/></Server>}/>
+          <Route path={public_url + '/'} element={<Server app={this}><SplashServer app={this}/></Server>}/>
           {/* <Route exact path={public_url + '/:clientid'} render={(props) => <Server {...props} app={this}><SplashServer {...props} app={this}/></Server>}/> */}
           {/* <Route exact path={public_url + '/settings/servers'} render={(props) => <Server {...props} serverNotRequired={true} app={this}><SettingsServers {...props} app={this}/></Server>}/> */}
           {/* <Route exact path={public_url + '/:server/settings/servers'} render={(props) => <Server {...props} serverNotRequired={true} app={this}><SettingsServers {...props} app={this}/></Server>}/> */}
           {/* <Route exact path={public_url + '/:server/settings/bundles'} render={(props) => <Server {...props} serverNotRequired={true} app={this}><SettingsBundles {...props} app={this}/></Server>}/> */}
-          <Route path={public_url + '/:server/open'} render={(props) => <Server {...props} app={this}><SplashBundle {...props} app={this} openDialog={true}/></Server>}/>
-          <Route path={public_url + '/:server/transfer/:bundleid'} render={(props) => <Server {...props} app={this}><SplashBundle {...props} app={this} transfer={true}/></Server>}/>
-          <Route path={public_url + '/:server/:bundleid/servers'} render={(props) => <Server {...props} app={this}><SplashServer {...props} app={this} switchServer={true}/></Server>}/>
-          <Route path={public_url + '/:server/:bundleid/ps'} render={(props) => <Server {...props} app={this}><Bundle {...props} app={this} PSPanelOnly={true}/></Server>}/>
-          <Route path={public_url + '/:server/:bundleid/figures'} render={(props) => <Server {...props} app={this}><Bundle {...props} app={this} FigurePanelOnly={true}/></Server>}/>
-          <Route path={public_url + '/:server/:bundleid/:action'} render={(props) => <Server {...props} app={this}><Bundle {...props} app={this}/></Server>}/>
-          <Route path={public_url + '/:server/:bundleid'} render={(props) => <Server {...props} app={this}><Bundle {...props} app={this}/></Server>}/>
-          <Route path={public_url + '/:server'} render={(props) => <Server {...props} app={this}><SplashBundle {...props} app={this}/></Server>}/>
-          <Route path="*" component={NotFound} />
+          {/*<Route path={public_url + '/:server/open'} element={<Server  {...this.props} app={this}><SplashBundle app={this} openDialog={true}/></Server>}/>*/}
+          {/*<Route path={public_url + '/:server/transfer/:bundleid'} element={<Server {...this.props} app={this}><SplashBundle app={this} transfer={true}/></Server>}/>*/}
+          {/*<Route path={public_url + '/:server/:bundleid/servers'} element={<Server {...this.props} app={this}><SplashServer {...this.props} app={this} switchServer={true}/></Server>}/>*/}
+          {/*<Route path={public_url + '/:server/:bundleid/ps'} element={<Server {...this.props} app={this}><Bundle app={this} PSPanelOnly={true}/></Server>}/>*/}
+          {/*<Route path={public_url + '/:server/:bundleid/figures'} element={<Server {...this.props} app={this}><Bundle app={this} FigurePanelOnly={true}/></Server>}/>*/}
+          {/*<Route path={public_url + '/:server/:bundleid/:action'} element={<Server {...this.props} app={this}><Bundle app={this}/></Server>}/>*/}
+          {/*<Route path={public_url + '/:server/:bundleid'} element={<Server {...this.props} app={this}><Bundle app={this}/></Server>}/>*/}
+          {/*<Route path={public_url + '/:server'} element={<Server {...this.props} app={this}><SplashBundle app={this}/></Server>}/>*/}
+          <Route path="*" element={<NotFound/>} />
         </Routes>
-      </Router>
+      </MyRouter>
     )
   }
 }
@@ -288,9 +288,9 @@ class Server extends Component {
   // becomes bloated, it may be nice to have that code separation by moving
   // all server-related logic here.
   componentDidUpdate() {
-    var server = this.props.match.params.server;
+    let server = useParams();
 
-    if (server != this.props.app.state.serverHost && !this.props.app.state.allowDisconnectReadonly) {
+    if (server !== this.props.app.state.serverHost && !this.props.app.state.allowDisconnectReadonly) {
       // NOTE must be !=, not !==
       if (server) {
         // this.props.app.setState({serverHost: server})

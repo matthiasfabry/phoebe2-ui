@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {redirect} from 'react-router-dom';
 
-import {Link, randomstr, generatePath, getServerWarning} from './common';
+import {MyLink, randomstr, generatePath, getServerWarning} from './common';
 
 var versionCompare = require('semver-compare');  // function that returns -1, 0, 1
 
@@ -224,7 +224,7 @@ export class Toolbar extends Component {
 class UpdateButton extends Component {
   render() {
     return (
-      <Link href={this.props.href} target="_blank" title={this.props.title} style={{marginLeft: "5px", marginRight: "5px", paddingLeft: "5px", paddingRight: "5px", border: "2px solid white", borderRadius: "4px", fontWeight: "normal", fontVariant: "all-small-caps", paddingBottom: "4px", paddingTop: "2px"}}>{this.props.children}</Link>
+      <MyLink href={this.props.href} target="_blank" title={this.props.title} style={{marginLeft: "5px", marginRight: "5px", paddingLeft: "5px", paddingRight: "5px", border: "2px solid white", borderRadius: "4px", fontWeight: "normal", fontVariant: "all-small-caps", paddingBottom: "4px", paddingTop: "2px"}}>{this.props.children}</MyLink>
     )
   }
 }
@@ -341,7 +341,7 @@ export class Statusbar extends Component {
               <span style={{margin: "4px"}}>{this.props.app.state.serverHost}</span>
             </span>
             :
-            <Link style={{fontWeight: "inherit", fontSize: "inherit"}} title={serverTitle} onClick={this.changeServerWarning} to={serverPath}>
+            <MyLink style={{fontWeight: "inherit", fontSize: "inherit"}} title={serverTitle} onClick={this.changeServerWarning} to={serverPath}>
               <span className="fa-md fas fa-fw fa-broadcast-tower" style={{margin: "4px"}}/>
               <span style={serverVersionStyle}>{this.props.app.state.serverPhoebeVersion}</span>
               {this.props.app.state.serverInfo ?
@@ -350,7 +350,7 @@ export class Statusbar extends Component {
                 null
               }
               <span style={{margin: "4px"}}>{this.props.app.state.serverHost}</span>
-            </Link>
+            </MyLink>
         :
         null
       }

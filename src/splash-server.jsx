@@ -1,16 +1,26 @@
 import React, { Component } from 'react';
-import {redirect} from 'react-router-dom';
+import {redirect, useNavigate, useParams, useLocation, useMatches} from 'react-router-dom';
 
-import {Link, generatePath, abortableFetch, getServerWarning} from './common';
+import {MyLink, generatePath, abortableFetch, getServerWarning} from './common';
 
 // import {history} from './history';
 import {LogoSplash} from './logo';
 import {Statusbar} from './ui';
 
+let versionCompare = require('semver-compare');  // function that returns -1, 0, 1
 
-var versionCompare = require('semver-compare');  // function that returns -1, 0, 1
+const withRouter = WrappedComponent => props =>  {
+  let location = useLocation();
+  let navigate = useNavigate();
+  let params = useParams();
+  let matches = useMatches();
+  console.log("create withRouter object", params);
+  return (
+    <WrappedComponent {...props} router={{ location, navigate, params, matches }} />
+  );
+}
 
-export class SplashServer extends Component {
+class SplashServer extends Component {
   constructor(props) {
     super(props);
     this.splashScrollable = React.createRef();
@@ -18,13 +28,13 @@ export class SplashServer extends Component {
   }
   disableAllInput = () => {
     HTMLCollection.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
-    for (var element of this.splashScrollable.current.children) {
+    for (let element of this.splashScrollable.current.children) {
       element.classList.add('disabled');
     }
   }
   enableAllInput = () => {
     HTMLCollection.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
-    for (var element of this.splashScrollable.current.children) {
+    for (let element of this.splashScrollable.current.children) {
       element.classList.remove('disabled');
     }
   }
@@ -34,9 +44,9 @@ export class SplashServer extends Component {
   //   }
   // }
   componentDidMount() {
-    if (this.props.match.params.bundleid && this.props.app.state.serverStatus=='connected') {
+    if (this.props.match.params.bundleid && this.props.app.state.serverStatus==='connected') {
       // then we're trying to switch servers, so we need to download the current bundle before switching
-      var saveURL = "http://" + this.props.app.state.serverHost + "/save_bundle/" + this.props.match.params.bundleid
+      let saveURL = "http://" + this.props.app.state.serverHost + "/save_bundle/" + this.props.match.params.bundleid
       console.log("saving bundle from "+saveURL)
 
       this.abortSaveTransferController = new window.AbortController();
@@ -64,7 +74,7 @@ export class SplashServer extends Component {
     }
   }
   render() {
-    var bundleid = this.props.match.params.bundleid
+    let bundleid = this.props.match.params.bundleid
 
     let autoconnect
     if (this.props.app.state.isElectron) {
@@ -79,7 +89,7 @@ export class SplashServer extends Component {
 
     autoconnect = autoconnect && this.props.app.state.serverAllowAutoconnect && !bundleid
 
-    var skipChildServer = false;
+    let skipChildServer = false;
     if (this.props.app.state.isElectron) {
       skipChildServer = window.require('electron').remote.getGlobal('pyPort') === null && window.require('electron').remote.getGlobal('args').n
     }
@@ -106,7 +116,7 @@ export class SplashServer extends Component {
                 <b>Connect to Server</b>
               }
 
-              {/* <Link style={{float: "right"}} title="configure server settings" to="/settings/servers"><span className="fas fa-fw fa-cog"/></Link> */}
+              {/* <MyLink style={{float: "right"}} title="configure server settings" to="/settings/servers"><span className="fas fa-fw fa-cog"/></MyLink> */}
             </p>
 
             <div ref={this.splashScrollable} className="splash-scrollable">
@@ -130,6 +140,8 @@ export class SplashServer extends Component {
   }
 }
 
+export default withRouter(SplashServer);
+
 class ServerStatusIcon extends Component {
   constructor(props) {
     super(props);
@@ -141,10 +153,10 @@ class ServerStatusIcon extends Component {
     // this.props.phoebeVersion
     // this.props.status ('connecting', 'connected', null)
     let title
-    var classes = "fas fa-fw"
-    var style = {display: "inline-block", float: "left", marginTop: "4px", textAlign: "center", textDecoration: "none"}
-    var to = null;
-    var onClick = null;
+    let classes = "fas fa-fw"
+    let style = {display: "inline-block", float: "left", marginTop: "4px", textAlign: "center", textDecoration: "none"}
+    let to = null;
+    let onClick = null;
 
     if (this.props.status) {
       if (this.props.status === 'connecting') {
@@ -177,7 +189,7 @@ class ServerStatusIcon extends Component {
     }
 
     return (
-      <Link style={style} className={classes} title={title} to={to} onClick={onClick} onMouseEnter={()=>{this.setState({hover:true})}} onMouseLeave={()=>{this.setState({hover:false})}}></Link>
+      <MyLink style={style} className={classes} title={title} to={to} onClick={onClick} onMouseEnter={()=>{this.setState({hover:true})}} onMouseLeave={()=>{this.setState({hover:false})}}></MyLink>
     )
   }
 }
@@ -185,7 +197,7 @@ class ServerStatusIcon extends Component {
 class ServerVersionSpan extends Component {
   render() {
     let text, title
-    var style = {display: "inline-block", float: "left", width: "60px", marginLeft: "5px", marginRight: "5px", textAlign: "center"}
+    let style = {display: "inline-block", float: "left", width: "60px", marginLeft: "5px", marginRight: "5px", textAlign: "center"}
 
     if (this.props.phoebeVersion) {
       style.border = "1px dotted #a1a1a1"
@@ -246,7 +258,7 @@ class ServerButton extends Component {
     };
   }
   getInfo = (scanTimeout, cancelConnectIfFail) => {
-    var location = this.props.location;
+    let location = this.props.location;
     if (!location.startsWith("http://")) {
       location = "http://" + location
     }
@@ -293,7 +305,7 @@ class ServerButton extends Component {
     // this.componentDidUpdate();
   }
   componentDidUpdate() {
-    var status = null
+    let status = null
     if (this.props.app.state.serverHost===this.props.location) {
       if (this.props.switchServer) {
         status = 'connected'
@@ -321,7 +333,7 @@ class ServerButton extends Component {
     if (e) {e.stopPropagation();}
 
     if (this.state.status) {
-      var doDisconnect = true
+      let doDisconnect = true
       if (this.state.status==='connected') {
         doDisconnect = confirm("Disconnecting will close the bundle and any unsaved changes will be lost.  Continue?")
       }
@@ -358,13 +370,13 @@ class ServerButton extends Component {
       return <redirect to={generatePath(this.props.location)}/>
     }
 
-    var btnClassName = "btn btn-transparent"
+    let btnClassName = "btn btn-transparent"
     if (!this.state.phoebeVersion) {
       btnClassName += " btn-transparent-disabled"
     }
 
     let locationText
-    var title = "connect to server at "+this.props.location+" running PHOEBE "+this.state.phoebeVersion
+    let title = "connect to server at "+this.props.location+" running PHOEBE "+this.state.phoebeVersion
 
     if (this.props.isSpawned) {
       if (this.state.phoebeVersion || !this.props.app.state.serverStartingChildProcess) {
@@ -376,13 +388,13 @@ class ServerButton extends Component {
       locationText = this.props.location
     }
 
-    var style={}
+    let style={}
     if (this.state.status==='connecting' || this.state.removeConfirmed || this.props.app.state.serverStatus==='connecting') {
       style = {pointerEvents: "none"}
     }
 
 
-    var removeStyle = {pointerEvents: "all"}
+    let removeStyle = {pointerEvents: "all"}
     if (this.state.removeConfirmed) {
       btnClassName += " btn-transparent-remove"
       removeStyle.color = "red"
@@ -391,9 +403,9 @@ class ServerButton extends Component {
       removeStyle.color = "transparent"
     }
 
-    var locationSpan = <span style={{display: "inline-block", float: "left", textAlign: "center", width: "calc(100% - 210px)"}}>{locationText}</span>
+    let locationSpan = <span style={{display: "inline-block", float: "left", textAlign: "center", width: "calc(100% - 210px)"}}>{locationText}</span>
 
-    var to = generatePath(this.props.location);
+    let to = generatePath(this.props.location);
     if (this.props.match.params.bundleid) {
       if (this.state.status==='connected') {
         to = generatePath(this.props.location, this.props.match.params.bundleid)
@@ -408,8 +420,8 @@ class ServerButton extends Component {
     }
 
 
-    var clientNeedsUpdate = false
-    var serverNeedsUpdate = false
+    let clientNeedsUpdate = false
+    let serverNeedsUpdate = false
     if (this.state.clientMinVersion !== null) {
       clientNeedsUpdate = versionCompare(this.props.app.state.clientVersion, this.state.clientMinVersion) < 0
     }
@@ -417,8 +429,8 @@ class ServerButton extends Component {
       serverNeedsUpdate = versionCompare(this.state.phoebeVersion, this.props.app.state.serverMinVersion) < 0
     }
 
-    var href = null
-    var target = null
+    let href = null
+    let target = null
     if (serverNeedsUpdate) {
       to = null
       href = "http://phoebe-project.org/install"
@@ -431,12 +443,12 @@ class ServerButton extends Component {
       target = "_blank"
     }
 
-    var serverWarning = getServerWarning(this.state.phoebeVersion);
+    let serverWarning = getServerWarning(this.state.phoebeVersion);
 
     return (
       // NOTE: we use onMouseOver instead of onMouseEnter here so that it is triggered when a server above is removed
       <div onMouseOver={this.hoverOn} onMouseLeave={this.hoverOff} className="splash-scrollable-btn-div" style={style}>
-        <Link className={btnClassName} to={to} href={href} target={target} title={title}>
+        <MyLink className={btnClassName} to={to} href={href} target={target} title={title}>
           <ServerStatusIcon app={this.props.app} phoebeVersion={this.state.phoebeVersion} status={this.state.status} autoconnect={this.props.autoconnect} serverButton={this}/>
           <ServerVersionSpan app={this.props.app}
                              phoebeVersion={this.state.phoebeVersion}
@@ -461,7 +473,7 @@ class ServerButton extends Component {
             </span>
           }
 
-        </Link>
+        </MyLink>
       </div>
     )
 
@@ -515,8 +527,8 @@ class ServerAddButton extends Component {
     this.serverLocationInput = React.createRef()
   }
   addServer = (e) => {
-    var newServer = this.serverLocationInput.current.value
-    var servers = this.props.app.state.settingsServerHosts
+    let newServer = this.serverLocationInput.current.value
+    let servers = this.props.app.state.settingsServerHosts
     // TODO: more validation that this is an acceptable value... otherwise we're just asking for failures in the entry
     if (servers.indexOf(newServer)===-1) {
       servers.push(newServer)

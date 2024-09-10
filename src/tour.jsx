@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import {Link, generatePath} from './common';
+import {MyLink, generatePath} from './common';
 
 
 class Tip extends Component {
@@ -39,11 +39,11 @@ class Tip extends Component {
       return null
     } else if (this.props.to) {
       return (
-        <Link className='phoebe-tip' to={this.props.to}>
+        <MyLink className='phoebe-tip' to={this.props.to}>
           <span className="fa-fw fas fa-times" style={{float: "right", cursor: "pointer"}} title="don't show again" onClick={this.dismiss}/>
 
           {this.props.children}
-        </Link>
+        </MyLink>
       )
     } else {
       return (
@@ -93,8 +93,8 @@ class TipPinning extends Component {
     return this.props.alreadyDismissed.indexOf("Filter") !== -1
   }
   isVisibleEnd = () => {
-    var queryParams = this.props.app.queryParams || {}
-    var pinned = queryParams.pinned || []
+    let queryParams = this.props.app.queryParams || {}
+    let pinned = queryParams.pinned || []
 
     return pinned.length > 0;
   }
@@ -113,8 +113,8 @@ class TipFilterAdvanced extends Component {
     return this.props.alreadyDismissed.indexOf("Pinning") !== -1
   }
   isVisibleEnd = () => {
-    var queryParams = this.props.app.queryParams || {}
-    var advanced = queryParams.advanced || []
+    let queryParams = this.props.app.queryParams || {}
+    let advanced = queryParams.advanced || []
 
     return advanced.length > 0;
   }
@@ -151,8 +151,8 @@ class TipAddDataset extends Component {
     return this.props.alreadyDismissed.indexOf("Filter") !== -1
   }
   isVisibleEnd = () => {
-    var tags = this.props.bundle.state.tags || {}
-    var tagsDatasets = tags.datasets || []
+    let tags = this.props.bundle.state.tags || {}
+    let tagsDatasets = tags.datasets || []
 
     return tagsDatasets.length > 0;
   }
@@ -167,14 +167,14 @@ class TipAddDataset extends Component {
 
 class TipRunCompute extends Component {
   isVisibleStart = () => {
-    var tags = this.props.bundle.state.tags || {}
-    var tagsDatasets = tags.datasets || []
+    let tags = this.props.bundle.state.tags || {}
+    let tagsDatasets = tags.datasets || []
 
     return this.props.alreadyDismissed.indexOf("Filter") !== -1 && tagsDatasets.length > 0
   }
   isVisibleEnd = () => {
-    var tags = this.props.bundle.state.tags || {}
-    var tagsModels = tags.models || []
+    let tags = this.props.bundle.state.tags || {}
+    let tagsModels = tags.models || []
 
     return tagsModels.length > 0;
   }
@@ -189,16 +189,16 @@ class TipRunCompute extends Component {
 
 class TipAddFigure extends Component {
   isVisibleStart = () => {
-    var tags = this.props.bundle.state.tags || {}
-    var tagsModels = tags.models || []
+    let tags = this.props.bundle.state.tags || {}
+    let tagsModels = tags.models || []
 
     // TODO: also show if OBSERVATIONS are included in any datasets
 
     return this.props.alreadyDismissed.indexOf("Filter") !== -1 && tagsModels.length > 0
   }
   isVisibleEnd = () => {
-    var tags = this.props.bundle.state.tags || {}
-    var tagsFigures = tags.figures || []
+    let tags = this.props.bundle.state.tags || {}
+    let tagsFigures = tags.figures || []
 
     return tagsFigures.length > 0;
   }
@@ -241,7 +241,7 @@ export class Tour extends Component {
     };
   }
   onDismissTip = (title, byUser) => {
-    var alreadyDismissed = this.state.alreadyDismissed
+    let alreadyDismissed = this.state.alreadyDismissed
 
     if (alreadyDismissed.indexOf(title) === -1) {
       alreadyDismissed = alreadyDismissed.concat(title)
@@ -249,7 +249,7 @@ export class Tour extends Component {
     }
 
     if (byUser) {
-      var settingsDismissedTips = this.props.app.state.settingsDismissedTips
+      let settingsDismissedTips = this.props.app.state.settingsDismissedTips
       if (settingsDismissedTips.indexOf(title)===-1) {
         settingsDismissedTips.push(title)
         this.props.app.updateSetting('settingsDismissedTips', settingsDismissedTips)
@@ -262,7 +262,7 @@ export class Tour extends Component {
     this.props.app.updateSetting('settingsDismissedTips', "")
   }
   componentDidMount() {
-    var settingsDismissedTips = this.props.app.state.settingsDismissedTips
+    let settingsDismissedTips = this.props.app.state.settingsDismissedTips
     if (settingsDismissedTips.length > 0) {
       this.setState({alreadyDismissed: settingsDismissedTips})
     }

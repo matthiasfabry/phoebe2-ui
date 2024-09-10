@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
 import {PanelGroup} from 'rsuite'; // https://www.npmjs.com/package/react-panelgroup
-import {arrayMove} from 'react-sortable-hoc';
+import {arrayMove} from '@dnd-kit/sortable';
 
 // will need to move to array-move if updating react-sortable-hoc, but
 // currently causes npm run build to fail
@@ -18,7 +18,7 @@ import {TagPanel} from './panel-tags';
 import {PSPanel} from './panel-ps';
 import {ActionPanel} from './panel-action';
 import {FigurePanel} from './panel-figures';
-import {Link, generatePath, abortableFetch, mapObject, sameLists} from './common';
+import {generatePath, abortableFetch, mapObject, sameLists} from './common';
 import {Toolbar, Statusbar} from './ui';
 
 
@@ -68,8 +68,8 @@ export class Bundle extends Component {
         this.setState({pendingBundleMethod: null})
 
       } else {
-        var level = data.level || 'ERROR'
-        var toastLevel = toast.error
+        let level = data.level || 'ERROR'
+        let toastLevel = toast.error
         if (level.toUpperCase() === 'WARNING') {
           toastLevel = toast.warning
         }
@@ -95,7 +95,7 @@ export class Bundle extends Component {
 
     this.props.app.socket.on(this.state.bundleid+':figures_updated:react', (data) => {
       // console.log(data)
-      var figureUpdateTimes = this.state.figureUpdateTimes
+      let figureUpdateTimes = this.state.figureUpdateTimes
       Object.keys(data.figure_update_times).forEach( figure => {
         figureUpdateTimes[figure] = data.figure_update_times[figure]
       })
@@ -109,12 +109,12 @@ export class Bundle extends Component {
     this.props.app.socket.on(this.state.bundleid+':changes:react', (data) => {
       // console.log("received changes", data)
       if (data.parameters) {
-        var params = this.state.params;
+        let params = this.state.params;
         Object.keys(data.parameters).forEach( uniqueid => {
           // console.log("updating "+data.parameters[uniqueid].uniquetwig)
           params[uniqueid] = data.parameters[uniqueid];
         });
-        var removed_params = data.removed_parameters || []
+        let removed_params = data.removed_parameters || []
         removed_params.forEach( uniqueid => {
           delete params[uniqueid];
         })
@@ -130,23 +130,23 @@ export class Bundle extends Component {
         this.setState({tags: data.tags});
 
         // update figures
-        var figures = this.state.figures
+        let figures = this.state.figures
         for (const figure of data.tags.figures) {
-          if (figures.indexOf(figure) == -1) {
+          if (figures.indexOf(figure) === -1) {
             figures.push(figure)
           }
         }
         figures.forEach( (figure,i) => {
           // likewise if there is a figure that is no longer in data.tags.figures, we need to remove
-          if (data.tags.figures.indexOf(figure) == -1) {
+          if (data.tags.figures.indexOf(figure) === -1) {
             figures.splice(i, 1)
           }
         })
         this.setState({figures: figures})
 
-        var figureUpdateTimes = this.state.figureUpdateTimes
+        let figureUpdateTimes = this.state.figureUpdateTimes
         Object.keys(figureUpdateTimes).forEach( figure => {
-          if (figures.indexOf(figure) == -1) {
+          if (figures.indexOf(figure) === -1) {
             // then this figure has been removed, so we need to remove it from figureUpdateTimes
             delete figureUpdateTimes[figure]
           }
@@ -158,12 +158,12 @@ export class Bundle extends Component {
 
       if (data.add_filter) {
 
-        var filterstr = ''
+        let filterstr = ''
         for (const [key, value] of Object.entries(data.add_filter)) {
           filterstr += key+ ' = '+value
         }
 
-        var onClick = (e) => {this.props.app.clearQueryParams(); this.props.app.setQueryParams(data.add_filter)}
+        let onClick = (e) => {this.props.app.clearQueryParams(); this.props.app.setQueryParams(data.add_filter)}
 
         if (this.state.pendingBundleMethod) {
           toast.update(this.state.pendingBundleMethod, {
@@ -235,7 +235,7 @@ export class Bundle extends Component {
       .then(json => {
         if (json.data.success) {
           this.registerBundle();
-          var figureUpdateTimes = {}
+          let figureUpdateTimes = {}
           json.data.tags.figures.forEach( (figure) => {
             // NOTE: this will show an empty icon if failed (ie no data or model);
             // so as soon as we set this we'll request all to be updated
@@ -305,8 +305,8 @@ export class Bundle extends Component {
   }
   inAdvanced = (param, advanced) => {
     const advancedAll = ['not_visible', 'is_default', 'is_advanced', 'is_single', 'is_constraint'];
-    var inAdvanced = []
-    for (var i=0; i<advancedAll.length; i++) {
+    let inAdvanced = []
+    for (let i=0; i<advancedAll.length; i++) {
       if (advanced.indexOf(advancedAll[i]) === -1 && param.advanced_filter.indexOf(advancedAll[i]) !== -1) {
         inAdvanced.push(advancedAll[i])
       }
@@ -319,13 +319,13 @@ export class Bundle extends Component {
     this.emit('bundle_method', {method: 'attach_job', uniqueid: uniqueid});
   }
   updatePollingJobs = (params) => {
-    var pollingJobs = [];
+    let pollingJobs = [];
     mapObject(params, (uniqueid, param) => {
       if (Object.keys(this.state.pollingJobs).indexOf(uniqueid) === -1) {
         if (param.qualifier === 'detached_job' && ['loaded', 'error', 'killed'].indexOf(param.valuestr) === -1) {
           // then we need to poll for updates to this parameter
           // console.log("adding polling interval for detached_job "+uniqueid+" with status "+param.valuestr)
-          var interval = setInterval(() => this.pollJob(uniqueid), 1000);
+          let interval = setInterval(() => this.pollJob(uniqueid), 1000);
           pollingJobs[uniqueid] = interval
         }
       } else {
@@ -349,26 +349,26 @@ export class Bundle extends Component {
     });
   }
   filter = (params, filter, ignoreGroups=[]) => {
-    var ignoreGroupsFilter = ignoreGroups.concat(["pinned", "advanced", "orderBy", "tmp", "checks", "lastActive", "disconnectButton"])
+    let ignoreGroupsFilter = ignoreGroups.concat(["pinned", "advanced", "orderBy", "tmp", "checks", "lastActive", "disconnectButton"])
 
-    var nAdvancedHiddenEach = {};
-    var nAdvancedHiddenTotal = 0;
-    var inAdvancedAll = null
-    var paramsfilteredids = [];
-    var includeThisParam = true;
+    let nAdvancedHiddenEach = {};
+    let nAdvancedHiddenTotal = 0;
+    let inAdvancedAll = null
+    let paramsfilteredids = [];
+    let includeThisParam = true;
 
-    var advanced = filter.advanced || []
+    let advanced = filter.advanced || []
 
     if (filter.tmp!==undefined && filter.tmp.length) {
       // then this is a temporary filter (i.e. for the results from add_*)
       // syntax: tag1:value1|value2,tag2:value1
       const filterStrings = filter.tmp.split(',')
-      var filterTmp = {}
+      let filterTmp = {}
       for (const filterString of filterStrings) {
         // console.log(filterString)
-        var tmpFilterTag = filterString.split(':')[0].replace('%22', '')
-        var tmpFilterValues = filterString.split(':')[1].replace('%22', '').split('|')
-        tmpFilterValues = tmpFilterValues.map((item) => { return item == 'null' ? null : item; });
+        let tmpFilterTag = filterString.split(':')[0].replace('%22', '')
+        let tmpFilterValues = filterString.split(':')[1].replace('%22', '').split('|')
+        tmpFilterValues = tmpFilterValues.map((item) => { return item === 'null' ? null : item; });
         // console.log(tmpFilterTag)
         // console.log(tmpFilterValues)
         filterTmp[tmpFilterTag] = tmpFilterValues
@@ -440,7 +440,7 @@ export class Bundle extends Component {
             // NOTE: this isn't used by the UI (pinning is instead), but is
             // used by the python-client to request certain parameters while
             // still obeying visibilities, etc
-            if (tags.indexOf(uniqueid) ==-1) {
+            if (tags.indexOf(uniqueid) === -1) {
               includeThisParam = false
             }
           } else if (ignoreGroupsFilter.indexOf(group)===-1 && tags.length && tags.indexOf(param[group])===-1){
@@ -455,7 +455,7 @@ export class Bundle extends Component {
 
 
     if (ignoreGroups.indexOf("pinned")===-1){
-      var pinned = filter.pinned || []
+      let pinned = filter.pinned || []
       if (typeof pinned === 'string') {
         pinned = JSON.parse(pinned.split('%27').join('"').split('%20').join(''))
       }
@@ -474,10 +474,10 @@ export class Bundle extends Component {
       console.log("Bundle.componentDidUpdate recomputing paramsfilteredids")
 
       // determine which parameters (by a list of uniqueids) is in the filtered PS
-      var filteredInfo = this.filter(this.state.params, this.props.app.queryParams);
-      var paramsfilteredids = filteredInfo[0];
-      var nAdvancedHiddenEach = filteredInfo[1];
-      var nAdvancedHiddenTotal = filteredInfo[2];
+      let filteredInfo = this.filter(this.state.params, this.props.app.queryParams);
+      let paramsfilteredids = filteredInfo[0];
+      let nAdvancedHiddenEach = filteredInfo[1];
+      let nAdvancedHiddenTotal = filteredInfo[2];
 
       if (paramsfilteredids.length !== this.state.paramsfilteredids.length || !sameLists(paramsfilteredids, this.state.paramsfilteredids)) {
         // since we're only allowing one tag to be added or removed, we can
@@ -485,8 +485,8 @@ export class Bundle extends Component {
         this.setState({paramsfilteredids: paramsfilteredids, nAdvancedHiddenEach: nAdvancedHiddenEach, nAdvancedHiddenTotal: nAdvancedHiddenTotal});
 
         // determine "availability" of all tags
-        var tagsAvailable = {}
-        var paramsfilteredids_thisgroup = null;
+        let tagsAvailable = {}
+        let paramsfilteredids_thisgroup = null;
         mapObject(this.state.tags, (group, tags) => {
           // i.e. group='componnet', tags=['binary', 'primary', 'secondary']
 
@@ -517,16 +517,13 @@ export class Bundle extends Component {
       return (<redirect to={this.state.redirect}/>)
     }
 
-
     if (this.props.PSPanelOnly) {
       return (<PSPanel app={this.props.app} bundleid={this.state.bundleid} bundle={this} PSPanelOnly={this.props.PSPanelOnly}/>)
     } else if (this.props.FigurePanelOnly) {
       return (<FigurePanel app={this.props.app} bundleid={this.state.bundleid} bundle={this} showPopoutButton={false} FigurePanelOnly={this.props.FigurePanelOnly}/>)
     }
 
-    var action = this.props.match.params.action
-
-    var panelWidths = [
+    let panelWidths = [
                       {size: 490, minSize:300, resize: "dynamic"},
                       {minSize:440, resize: "stretch"},
                       {size: 250, minSize:250, resize: "dynamic"}
