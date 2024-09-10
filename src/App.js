@@ -11,7 +11,7 @@ import ReactQueryParams from './react-query-params'; // https://github.com/jeff3
 import {history} from './history'
 import {MyRouter, isStaticFile, randomstr, generatePath} from './common'
 import {SplashBundle} from './splash-bundle';
-import SplashServer from './splash-server';
+import RoutedSplashServer from './splash-server';
 // import {SettingsServers, SettingsBundles} from './settings';
 import {Bundle} from './bundle';
 // import {PSPanel} from './panel-ps';
@@ -253,11 +253,12 @@ class App extends ReactQueryParams {
       public_url = process.env.PUBLIC_URL
     }
     console.log("in app render: ", public_url)
+
     return (
       <MyRouter history={history} ref={this.router}>
         <Routes>
           {/* NOTE: all Route components should be wrapped by a Server component to handle parsing the /:server (or lack there-of) and handing connecting/disconnecting to the websocket */}
-          <Route path={public_url + '/'} element={<Server app={this}><SplashServer app={this}/></Server>}/>
+          <Route path={public_url + '/'} element={<RoutedSplashServer app={this}/>}/>
           {/* <Route exact path={public_url + '/:clientid'} render={(props) => <Server {...props} app={this}><SplashServer {...props} app={this}/></Server>}/> */}
           {/* <Route exact path={public_url + '/settings/servers'} render={(props) => <Server {...props} serverNotRequired={true} app={this}><SettingsServers {...props} app={this}/></Server>}/> */}
           {/* <Route exact path={public_url + '/:server/settings/servers'} render={(props) => <Server {...props} serverNotRequired={true} app={this}><SettingsServers {...props} app={this}/></Server>}/> */}
@@ -334,11 +335,12 @@ class Server extends Component {
       return (
         // then we'll display there server splash.  If a server is connecting/reconnecting
         // then the splash server will show that state.
-        <SplashServer {...this.props}/>
+        <RoutedSplashServer {...this.props}/>
       )
     }
   }
 }
+
 
 
 export default App;

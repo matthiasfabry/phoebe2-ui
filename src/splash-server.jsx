@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {redirect, useNavigate, useParams, useLocation, useMatches} from 'react-router-dom';
+import {redirect, useNavigate, useParams, useLocation} from 'react-router-dom';
 
 import {MyLink, generatePath, abortableFetch, getServerWarning} from './common';
 
@@ -9,15 +9,12 @@ import {Statusbar} from './ui';
 
 let versionCompare = require('semver-compare');  // function that returns -1, 0, 1
 
-const withRouter = WrappedComponent => props =>  {
-  let location = useLocation();
-  let navigate = useNavigate();
-  let params = useParams();
-  let matches = useMatches();
-  console.log("create withRouter object", params);
-  return (
-    <WrappedComponent {...props} router={{ location, navigate, params, matches }} />
-  );
+export function withRouter(Children){
+   return(props)=>{
+
+      const match  = {params: useParams()};
+      return <Children {...props}  match = {match}/>
+  }
 }
 
 class SplashServer extends Component {
