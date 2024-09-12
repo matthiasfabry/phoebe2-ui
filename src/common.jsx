@@ -16,12 +16,12 @@ export const abortableFetch = ('signal' in new Request('')) ? window.fetch : fet
 
 let versionCompare = require('semver-compare');  // function that returns -1, 0, 1
 
-let BrowserWindow;
-if (isElectron()) {
-  BrowserWindow = window.require('electron').remote.BrowserWindow
-} else {
-  BrowserWindow = null;
-}
+// let BrowserWindow;
+// if (isElectron()) {
+//   BrowserWindow = window.require('electron').remote.BrowserWindow
+// } else {
+//   BrowserWindow = null;
+// }
 
 export function isStaticFile() {
   return window.location.pathname.includes('index.html')
@@ -170,7 +170,6 @@ export class MyRouter extends Component {
         <BrowserRouter >{this.props.children}</BrowserRouter>
       )
     }
-
   }
 }
 
@@ -254,8 +253,8 @@ export class Twig extends Component {
 
 
 export class FileReader extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       file: null,
       parsedData: null,

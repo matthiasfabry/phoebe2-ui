@@ -11,7 +11,7 @@ import makeAnimated from 'react-select/animated';
 const animatedComponents = makeAnimated();
 
 import {FigurePanelWidth} from './panel-figures';
-import {PSPanel, PSGroup} from './panel-ps';
+import {PSPanel} from './panel-ps';
 import {LogoSpinner} from './logo';
 
 // import FlipMove from 'react-flip-move'; // https://github.com/joshwcomeau/react-flip-move
@@ -138,7 +138,7 @@ class ActionContentAdd extends Component {
     let availableKinds = this.props.app.state.serverAvailableKinds[addType]
     let availableKindsList = availableKinds.map((choice) => ({value: choice, label: choice}))
 
-    if (addType=='feature'){
+    if (addType === 'feature'){
       let availableComponents = this.props.bundle.state.tags['components'] || ['']
       let availableComponentsList = availableComponents.map((choice) => ({value: choice, label: choice}))
 
@@ -156,7 +156,7 @@ class ActionContentAdd extends Component {
       this.props.onUpdatePacket({kind: kind})
     }
 
-    if (addType=='feature') {
+    if (addType === 'feature') {
       // alert(contextsForFeature)
       if (contextsForFeature.indexOf('component') === -1) {
         if (this.state.component !== null) {
@@ -415,7 +415,7 @@ class ActionContentRun extends Component {
     console.log("requesting update to checksReport run_checks_"+context+"("+label+")")
 
     this.abortGetChecksReportController = new window.AbortController();
-    abortableFetch("http://"+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
+    abortableFetch("https://"+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
       .then(res => res.json())
       .then(json => {
         if (json.data.success) {
@@ -448,9 +448,9 @@ class ActionContentRun extends Component {
   }
   getNewType = () => {
     let runType = this.props.action.split('_')[1]
-    if (runType == 'compute') {
+    if (runType === 'compute') {
       return 'model'
-    } else if (runType == 'solver') {
+    } else if (runType === 'solver') {
       return 'solution'
     }
     return null
@@ -560,7 +560,7 @@ class ActionContentAdopt extends Component {
     console.log("requesting update to checksReport run_checks_"+context+"("+label+")")
 
     this.abortGetChecksReportController = new window.AbortController();
-    abortableFetch("http://"+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
+    abortableFetch("https://"+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
       .then(res => res.json())
       .then(json => {
         if (json.data.success) {
@@ -634,10 +634,6 @@ class ActionContentAdopt extends Component {
     let distributionChoices = this.props.bundle.state.tags.distributions || [];
     let distributionChoicesList = distributionChoices.map((choice) => ({value: choice, label: choice +' (overwrite)'}))
 
-
-
-
-
     return (
       <div>
         <div className="form-group">
@@ -664,7 +660,6 @@ class ActionContentAdopt extends Component {
               value={this.state.remove}
               onToggle={this.onChangeRemove} />
           </span>
-
         </div>
 
         {paramsFiltered ?
@@ -672,9 +667,6 @@ class ActionContentAdopt extends Component {
           :
           null
         }
-
-
-
       </div>
     )
   }
@@ -694,7 +686,6 @@ class ActionContentExportArrays extends Component {
         alert("all selected arrays must have same length")
         return
       }
-
 
       this.props.onUpdatePacket({uniqueids: e.map(item => item.value).join()})
       this.setState({params: e})
@@ -717,7 +708,6 @@ class ActionContentExportArrays extends Component {
     }
 
     let valueParamsList = this.state.params
-
 
     return (
       <div>
@@ -743,7 +733,6 @@ class ActionContentJobs extends Component {
   render() {
     // this.props.bundle.state.pollingJobs {uniqueid: intervaleObject}
     // this.props.bundle.state.params {uniqueid: parameter}
-
 
     return (
       <div>
@@ -819,7 +808,7 @@ class ActionContentSettings extends Component {
             <React.Fragment>
               <label style={{width: "50%", textAlign: "right", paddingRight: "10px"}} title="executable command when launching terminal for python client">Terminal:</label>
               <span style={{width: "50%", lineHeight: "1.0", display: "inline-block", verticalAlign: "sub"}}>
-                <CreatableSelect options={terminalCmdOptions} value={{value: this.state.temrinalCmd, label: this.state.terminalCmd}} onChange={this.onChangeTerminalCmd} isMulti={false} />
+                <CreatableSelect options={terminalCmdOptions} value={{value: this.state.terminalCmd, label: this.state.terminalCmd}} onChange={this.onChangeTerminalCmd} isMulti={false} />
               </span>
             </React.Fragment>
             :
@@ -955,7 +944,7 @@ export class ActionPanel extends Component {
       } else {
         actionContent =  <LogoSpinner pltStyle={{backgroundColor: "rgb(43, 113, 177)"}}/>
       }
-    } else if (action == 'add') {
+    } else if (action === 'add') {
       actionIcon += 'fa-plus'
       if (tmpFilter) {
         actionContent = <ActionContentNewParameters app={this.props.app} bundle={this.props.bundle}/>
@@ -972,27 +961,27 @@ export class ActionPanel extends Component {
       } else {
         actionContent = <ActionContentImport app={this.props.app} bundle={this.props.bundle} action={this.props.action} context={context} onUpdatePacket={this.onUpdatePacket}/>
       }
-    } else if (action == 'rename') {
+    } else if (action === 'rename') {
       actionIcon += 'fa-pen'
       actionContent = <ActionContentRename app={this.props.app} bundle={this.props.bundle} action={this.props.action} onUpdatePacket={this.onUpdatePacket}/>
-    } else if (action == 'remove') {
+    } else if (action === 'remove') {
       actionIcon += 'fa-minus'
       actionContent = <ActionContentRemove app={this.props.app} bundle={this.props.bundle} action={this.props.action} onUpdatePacket={this.onUpdatePacket}/>
-    } else if (action == 'run') {
+    } else if (action === 'run') {
       actionIcon += 'fa-play'
       if (tmpFilter) {
         actionContent = <ActionContentNewParameters app={this.props.app} bundle={this.props.bundle}/>
       } else {
         actionContent = <ActionContentRun app={this.props.app} bundle={this.props.bundle} action={this.props.action} onUpdatePacket={this.onUpdatePacket}/>
       }
-    } else if (action == 'adopt') {
+    } else if (action === 'adopt') {
       actionIcon += 'fa-check-double'
       if (tmpFilter) {
         actionContent = <ActionContentNewParameters app={this.props.app} bundle={this.props.bundle}/>
       } else {
         actionContent = <ActionContentAdopt app={this.props.app} bundle={this.props.bundle} action={this.props.action} onUpdatePacket={this.onUpdatePacket}/>
       }
-    } else if (this.props.action == 'edit_figure') {
+    } else if (this.props.action === 'edit_figure') {
       // no actionIcon because we have a tmpFilter to show parameters
       if (tmpFilter) {
         // NOTE: this makes very specific assumptions about the format of URL
@@ -1003,7 +992,7 @@ export class ActionPanel extends Component {
                           <ActionContentNewParameters app={this.props.app} bundle={this.props.bundle} orderBy={'figure'}/>
                         </React.Fragment>
       }
-    } else if (this.props.action == 'view_figure') {
+    } else if (this.props.action === 'view_figure') {
       // no actionIcon because we have a tmpFilter to show parameters
       if (tmpFilter) {
         // NOTE: this makes very specific assumptions about the format of URL
@@ -1013,22 +1002,22 @@ export class ActionPanel extends Component {
                           <FigurePanelWidth app={this.props.app} bundle={this.props.bundle} figure={figure}/>
                         </React.Fragment>
       }
-    } else if (this.props.action == 'edit_figure_times') {
+    } else if (this.props.action === 'edit_figure_times') {
       // no actionIcon because we have a tmpFilter to show parameters
       if (tmpFilter) {
         actionContent = <React.Fragment>
                           <ActionContentNewParameters app={this.props.app} bundle={this.props.bundle} orderBy={'figure'}/>
                         </React.Fragment>
       }
-    } else if (this.props.action == 'import_data') {
+    } else if (this.props.action === 'import_data') {
       actionIcon = null;
       actionContent = <FileReader app={this.props.app} bundle={this.props.bundle} onUpdatePackets={this.onUpdatePackets}/>
-    } else if (this.props.action == 'export_data') {
+    } else if (this.props.action === 'export_data') {
       actionIcon = null;
       actionContent = <ActionContentExportArrays app={this.props.app} bundle={this.props.bundle} action={this.props.action} onUpdatePacket={this.onUpdatePacket}/>
-    } else if (action == 'jobs') {
+    } else if (action === 'jobs') {
       actionContent = <ActionContentJobs app={this.props.app} bundle={this.props.bundle}/>
-    } else if (action == 'settings') {
+    } else if (action === 'settings') {
       actionIcon = null;
       actionContent = <ActionContentSettings app={this.props.app} bundle={this.props.bundle}/>
     }
@@ -1055,7 +1044,7 @@ export class ActionPanel extends Component {
     } else if (this.props.action === 'export_data') {
       buttons = <div style={{float: "right"}}>
                   <span onClick={this.closePanel} className="btn btn-primary" style={{margin: "5px"}} title={"cancel "+this.props.action+" and return to filtered parameters"}><span className="fas fa-fw fa-times"></span> cancel</span>
-                  <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_arrays/'+this.props.bundle.state.bundleid+'/'+this.state.packet.uniqueids} download={this.props.bundle.state.bundleid+"_export_arrays.csv"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download file containing exported arrays"><span className="fas fa-fw fa-download"></span> export arrays</MyLink>
+                  <MyLink onClick={this.closePanel} href={"https://"+this.props.app.state.serverHost+'/export_arrays/'+this.props.bundle.state.bundleid+'/'+this.state.packet.uniqueids} download={this.props.bundle.state.bundleid+"_export_arrays.csv"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download file containing exported arrays"><span className="fas fa-fw fa-download"></span> export arrays</MyLink>
               </div>
     } else if (['edit_figure', 'edit_figure_times', 'jobs'].indexOf(this.props.action) !== -1) {
       buttons = <div style={{float: "right"}}>
@@ -1070,28 +1059,23 @@ export class ActionPanel extends Component {
         buttons = <div style={{float: "right"}}>
                     {this.props.action !== 'adopt_solution' ?
                       <span onClick={this.removeAction} className="btn btn-primary" style={{margin: "5px"}} title="remove any added parameters and cancel"><span className="fas fa-fw fa-minus"></span> remove</span>
-                      :
-                      null
+                      : null
                     }
-                    {this.props.action == 'add_compute' ?
+                    {this.props.action === 'add_compute' ?
                       <span onClick={()=>this.gotoAction('run_compute', {compute: this.props.app.queryParams.tmp.split(':')[1].replace('%22', '')})} className="btn btn-primary" style={{margin: "5px"}} title="accept changes and go to run_compute"><span className="fas fa-fw fa-play"></span> run</span>
-                      :
-                      null
+                      : null
                     }
-                    {this.props.action == 'add_dataset' ?
+                    {this.props.action === 'add_dataset' ?
                       <span onClick={()=>this.gotoAction('import_data', {datasets: [this.props.app.queryParams.tmp.split(':')[1].replace('%22', '')]})} className="btn btn-primary" style={{margin: "5px"}} title="accept changes and import data from a file"><span className="fas fa-fw fa-upload"></span> import data</span>
-                      :
-                      null
+                      : null
                     }
-                    {this.props.action == 'add_solver' ?
+                    {this.props.action === 'add_solver' ?
                       <span onClick={()=>this.gotoAction('run_solver', {solver: this.props.app.queryParams.tmp.split(':')[1].replace('%22', '')})} className="btn btn-primary" style={{margin: "5px"}} title="accept changes and go to run_solver"><span className="fas fa-fw fa-play"></span> run</span>
-                      :
-                      null
+                      : null
                     }
-                    {this.props.action == 'run_solver' ?
+                    {this.props.action === 'run_solver' ?
                       <span onClick={()=>this.gotoAction('adopt_solution', {solution: this.props.app.queryParams.tmp.split(':')[1].replace('%22', '')})} className="btn btn-primary" style={{margin: "5px"}} title="accept changes and go to adopt_solution"><span className="fas fa-fw fa-check-double"></span> adopt</span>
-                      :
-                      null
+                      : null
                     }
                     <span onClick={this.closePanel} className="btn btn-primary" style={{margin: "5px"}} title="accept changes and return to filtered parameters"><span className="fas fa-fw fa-chevron-right"></span> continue</span>
                 </div>
@@ -1099,14 +1083,12 @@ export class ActionPanel extends Component {
         buttons = <div style={{float: "right"}}>
                     <span onClick={this.closePanel} className="btn btn-primary" style={{margin: "5px"}} title={"cancel "+this.props.action+" and return to filtered parameters"}><span className="fas fa-fw fa-times"></span> cancel</span>
                     { this.props.action === 'run_compute' ?
-                      <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_compute/'+this.props.bundle.state.bundleid+'/'+this.state.packet.compute+'/'+this.state.packet.model} download={this.props.bundle.state.bundleid+"_run_compute_"+this.state.packet.compute+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_model' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
-                      :
-                      null
+                      <MyLink onClick={this.closePanel} href={"https://"+this.props.app.state.serverHost+'/export_compute/'+this.props.bundle.state.bundleid+'/'+this.state.packet.compute+'/'+this.state.packet.model} download={this.props.bundle.state.bundleid+"_run_compute_"+this.state.packet.compute+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_model' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
+                      : null
                     }
                     { this.props.action === 'run_solver' ?
-                      <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_solver/'+this.props.bundle.state.bundleid+'/'+this.state.packet.solver+'/'+this.state.packet.solution} download={this.props.bundle.state.bundleid+"_run_solver_"+this.state.packet.solver+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_solution' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
-                      :
-                      null
+                      <MyLink onClick={this.closePanel} href={"https://"+this.props.app.state.serverHost+'/export_solver/'+this.props.bundle.state.bundleid+'/'+this.state.packet.solver+'/'+this.state.packet.solution} download={this.props.bundle.state.bundleid+"_run_solver_"+this.state.packet.solver+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_solution' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
+                      : null
                     }
                     <span onClick={this.submitAction} className="btn btn-primary" style={actionStyle} title={this.props.action}><span className={actionIcon}></span> {this.props.action}</span>
                 </div>

@@ -10,7 +10,7 @@ import {Statusbar} from './ui';
 let versionCompare = require('semver-compare');  // function that returns -1, 0, 1
 
 export function withRouter(Children){
-   return(props)=>{
+   return (props)=>{
 
       const match  = {params: useParams()};
       return <Children {...props}  match = {match}/>
@@ -43,7 +43,7 @@ class SplashServer extends Component {
   componentDidMount() {
     if (this.props.match.params.bundleid && this.props.app.state.serverStatus==='connected') {
       // then we're trying to switch servers, so we need to download the current bundle before switching
-      let saveURL = "http://" + this.props.app.state.serverHost + "/save_bundle/" + this.props.match.params.bundleid
+      let saveURL = "https://" + this.props.app.state.serverHost + "/save_bundle/" + this.props.match.params.bundleid
       console.log("saving bundle from "+saveURL)
 
       this.abortSaveTransferController = new window.AbortController();
@@ -97,20 +97,15 @@ class SplashServer extends Component {
         <LogoSplash animationEffect="animateShimmer"/>
 
         {this.props.app.state.isElectron && window.require('electron').remote.getGlobal('args').w ?
-          null
-          :
+          null :
           <div className="splash-scrollable-header">
             {/* <p>Desktop application id: {remote.getGlobal('appid')}</p> */}
             {/* <p>Current connection: {this.props.app.state.serverHost} ({this.props.app.state.serverStatus})</p> */}
 
             <p style={{textAlign: "center", marginBottom: "0px", paddingLeft: "10px", paddingRight: "10px"}}>
               {bundleid ?
-                this.props.app.state.serverStatus==='connected' ?
-                  <b>Switch to Server</b>
-                  :
-                  <b>Connecting to Server...</b>
-                :
-                <b>Connect to Server</b>
+                this.props.app.state.serverStatus==='connected' ? <b>Switch to Server</b> : <b>Connecting to Server...</b>
+              : <b>Connect to Server</b>
               }
 
               {/* <MyLink style={{float: "right"}} title="configure server settings" to="/settings/servers"><span className="fas fa-fw fa-cog"/></MyLink> */}
@@ -120,8 +115,7 @@ class SplashServer extends Component {
               { this.props.app.state.isElectron ?
                 this.props.app.state.electronChildProcessPort !== null && !skipChildServer ?
                   <ServerButton key={"localhost:"+this.props.app.state.electronChildProcessPort} location={"localhost:"+this.props.app.state.electronChildProcessPort} autoconnect={autoconnect} switchServer={bundleid != null} isSpawned={true} app={this.props.app} splash={this} match={this.props.match}/>
-                  :
-                  <ServerInstallButton key={"server-not-installed"} app={this.props.app} splash={this} match={this.props.match} skipChildServer={skipChildServer}/>
+                  : <ServerInstallButton key={"server-not-installed"} app={this.props.app} splash={this} match={this.props.match} skipChildServer={skipChildServer}/>
                 :
                 null
               }
@@ -256,8 +250,8 @@ class ServerButton extends Component {
   }
   getInfo = (scanTimeout, cancelConnectIfFail) => {
     let location = this.props.location;
-    if (!location.startsWith("http://")) {
-      location = "http://" + location
+    if (!location.startsWith("https://")) {
+      location = "https://" + location
     }
 
     scanTimeout = scanTimeout || 0;
@@ -291,6 +285,7 @@ class ServerButton extends Component {
           //   this.cancelConnect();
           //   history.goBack();
           // }
+          console.log(err)
           this.setState({phoebeVersion: null, clientMinVersion: null, clientWarning: null, parentId: null});
           this.getInfo(scanTimeout + 500)
         });
@@ -430,12 +425,12 @@ class ServerButton extends Component {
     let target = null
     if (serverNeedsUpdate) {
       to = null
-      href = "http://phoebe-project.org/install"
+      href = "https://phoebe-project.org/install"
       title = "server requires update to at least "+this.props.app.state.serverMinVersion
       target = "_blank"
     } else if (clientNeedsUpdate) {
       to = null
-      href = "http://phoebe-project.org/clients"
+      href = "https://phoebe-project.org/clients"
       title = "client needs update to at least "+this.state.clientMinVersion+" (currently "+this.props.app.state.clientVersion+") to connect to this server"
       target = "_blank"
     }
@@ -485,7 +480,7 @@ class ServerInstallButton extends Component {
     };
   }
   openInstallLink = (e) => {
-    window.require('electron').shell.openExternal("http://phoebe-project.org/install")
+    window.require('electron').shell.openExternal("https://phoebe-project.org/install")
     this.setState({openedInstallLink: true})
   }
   restartChildProcess = (e) => {

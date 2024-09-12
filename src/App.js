@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Routes, Route, useParams} from 'react-router-dom'
+import {Routes, Route} from 'react-router-dom'
 import './App.css';
 
 import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
@@ -10,8 +10,8 @@ import ReactQueryParams from './react-query-params'; // https://github.com/jeff3
 
 import {history} from './history'
 import {MyRouter, isStaticFile, randomstr, generatePath} from './common'
-import {SplashBundle} from './splash-bundle';
-import RoutedSplashServer from './splash-server';
+import RoutedSplashBundle from './splash-bundle';
+import RoutedSplashServer, {withRouter} from './splash-server';
 // import {SettingsServers, SettingsBundles} from './settings';
 import {Bundle} from './bundle';
 // import {PSPanel} from './panel-ps';
@@ -74,7 +74,7 @@ class App extends ReactQueryParams {
     this.setState({[k]: v});
   }
   getElectronChildProcessPort = () => {
-    this.setState({electronChildProcessPort: window.require('electron').remote.getGlobal('pyPort')})
+    this.setState({electronChildProcessPort: window.ElectronAPI.getPyPort()})
   }
   redirectFromArgs = (server, bundleid, action, filter) => {
     // alert("redirectFromArgs "+server+" "+bundleid+" "+action+" "+filter)
@@ -117,12 +117,12 @@ class App extends ReactQueryParams {
         // this will set ignoreArgs to true so that we don't try processing again (on a reload, redirect, new window, etc)
         window.require('electron').remote.getGlobal('setIgnoreArgs')(true);
         const args = window.require('electron').remote.getGlobal('args');
-        var server = args['s'] || null;
-        var bundleid = args['b'] || null;
-        var jfile = args['j'] || null;
-        var filter = args['f'] || '';
-        var action = args['a'] || null;
-        var port = args['p'] || 5000
+        let server = args['s'] || null;
+        let bundleid = args['b'] || null;
+        let jfile = args['j'] || null;
+        let filter = args['f'] || '';
+        let action = args['a'] || null;
+        let port = args['p'] || 5000
 
         if (server === null) {
           server = 'localhost:'+port
@@ -130,8 +130,8 @@ class App extends ReactQueryParams {
 
         if (jfile !== null) {
 
-          var json = window.require('fs').readFileSync(jfile, "utf8")
-          fetch("http://"+server+"/open_bundle/load:phoebe2", {method: 'POST', body: JSON.stringify({json: json, bundleid: bundleid})})
+          let json = window.require('fs').readFileSync(jfile, "utf8")
+          fetch("https://"+server+"/open_bundle/load:phoebe2", {method: 'POST', body: JSON.stringify({json: json, bundleid: bundleid})})
             .then(res => res.json())
             .then(json => {
               if (json.data.success) {
@@ -173,25 +173,25 @@ class App extends ReactQueryParams {
       })
   }
   getServerPhoebeVersion = (serverHost) => {
-    fetch("http://"+serverHost+"/info", {method: 'POST', body: JSON.stringify({client_version: this.state.clientVersion, clientid: this.state.clientid})})
+    fetch("https://"+serverHost+"/info", {method: 'POST', body: JSON.stringify({client_version: this.state.clientVersion, clientid: this.state.clientid})})
       .then(res => res.json())
       .then(json => {
         this.setState({serverPhoebeVersion: json.data.phoebe_version, serverInfo: json.data.info || '', serverAvailableKinds: json.data.available_kinds, clientWarning: json.data.client_warning || null})
       })
       .catch(err => {
+        console.log(err)
         if (!this.queryParams.disconnectButton && (!this.state.isElectron || !window.require('electron').remote.getGlobal('args').w)) {
           alert("server may no longer be available.  Cancel connection to rescan.")
         }
         this.setState({serverPhoebeVersion: null, serverInfo: null, serverAvailableKinds: null});
       });
-    }
+  }
   serverConnect = (server) => {
     let serverHost = server || this.props.match.params.server
 
     if (this.queryParams.disconnect) {
       return
     }
-
 
     console.log("App.serverConnect to "+serverHost);
 
@@ -252,25 +252,23 @@ class App extends ReactQueryParams {
     } else {
       public_url = process.env.PUBLIC_URL
     }
-    console.log("in app render: ", public_url)
-
     return (
       <MyRouter history={history} ref={this.router}>
         <Routes>
-          {/* NOTE: all Route components should be wrapped by a Server component to handle parsing the /:server (or lack there-of) and handing connecting/disconnecting to the websocket */}
-          <Route path={public_url + '/'} element={<RoutedSplashServer app={this}/>}/>
-          {/* <Route exact path={public_url + '/:clientid'} render={(props) => <Server {...props} app={this}><SplashServer {...props} app={this}/></Server>}/> */}
-          {/* <Route exact path={public_url + '/settings/servers'} render={(props) => <Server {...props} serverNotRequired={true} app={this}><SettingsServers {...props} app={this}/></Server>}/> */}
-          {/* <Route exact path={public_url + '/:server/settings/servers'} render={(props) => <Server {...props} serverNotRequired={true} app={this}><SettingsServers {...props} app={this}/></Server>}/> */}
-          {/* <Route exact path={public_url + '/:server/settings/bundles'} render={(props) => <Server {...props} serverNotRequired={true} app={this}><SettingsBundles {...props} app={this}/></Server>}/> */}
-          {/*<Route path={public_url + '/:server/open'} element={<Server  {...this.props} app={this}><SplashBundle app={this} openDialog={true}/></Server>}/>*/}
-          {/*<Route path={public_url + '/:server/transfer/:bundleid'} element={<Server {...this.props} app={this}><SplashBundle app={this} transfer={true}/></Server>}/>*/}
-          {/*<Route path={public_url + '/:server/:bundleid/servers'} element={<Server {...this.props} app={this}><SplashServer {...this.props} app={this} switchServer={true}/></Server>}/>*/}
-          {/*<Route path={public_url + '/:server/:bundleid/ps'} element={<Server {...this.props} app={this}><Bundle app={this} PSPanelOnly={true}/></Server>}/>*/}
-          {/*<Route path={public_url + '/:server/:bundleid/figures'} element={<Server {...this.props} app={this}><Bundle app={this} FigurePanelOnly={true}/></Server>}/>*/}
-          {/*<Route path={public_url + '/:server/:bundleid/:action'} element={<Server {...this.props} app={this}><Bundle app={this}/></Server>}/>*/}
-          {/*<Route path={public_url + '/:server/:bundleid'} element={<Server {...this.props} app={this}><Bundle app={this}/></Server>}/>*/}
-          {/*<Route path={public_url + '/:server'} element={<Server {...this.props} app={this}><SplashBundle app={this}/></Server>}/>*/}
+          {/* NOTE: all Route components should be wrapped by a RoutedServer component to handle parsing the /:server (or lack there-of) and handing connecting/disconnecting to the websocket */}
+          <Route path={public_url + '/'} element={<RoutedServer {...this.props} app={this}><RoutedSplashServer app={this}/></RoutedServer>}/>
+          {/* <Route exact path={public_url + '/:clientid'} render={(props) => <RoutedServer {...props} app={this}><SplashServer {...props} app={this}/></RoutedServer>}/> */}
+          {/* <Route exact path={public_url + '/settings/servers'} render={(props) => <RoutedServer {...props} serverNotRequired={true} app={this}><SettingsServers {...props} app={this}/></RoutedServer>}/> */}
+          {/* <Route exact path={public_url + '/:server/settings/servers'} render={(props) => <RoutedServer {...props} serverNotRequired={true} app={this}><SettingsServers {...props} app={this}/></RoutedServer>}/> */}
+          {/* <Route exact path={public_url + '/:server/settings/bundles'} render={(props) => <RoutedServer {...props} serverNotRequired={true} app={this}><SettingsBundles {...props} app={this}/></RoutedServer>}/> */}
+          <Route path={public_url + '/:server/open'} element={<RoutedServer  {...this.props} app={this}><RoutedSplashBundle app={this} openDialog={true}/></RoutedServer>}/>
+          <Route path={public_url + '/:server/transfer/:bundleid'} element={<RoutedServer {...this.props} app={this}><RoutedSplashBundle app={this} transfer={true}/></RoutedServer>}/>
+          <Route path={public_url + '/:server/:bundleid/servers'} element={<RoutedServer {...this.props} app={this}><RoutedSplashServer {...this.props} app={this} switchServer={true}/></RoutedServer>}/>
+          <Route path={public_url + '/:server/:bundleid/ps'} element={<RoutedServer {...this.props} app={this}><Bundle app={this} PSPanelOnly={true}/></RoutedServer>}/>
+          <Route path={public_url + '/:server/:bundleid/figures'} element={<RoutedServer {...this.props} app={this}><Bundle app={this} FigurePanelOnly={true}/></RoutedServer>}/>
+          <Route path={public_url + '/:server/:bundleid/:action'} element={<RoutedServer {...this.props} app={this}><Bundle app={this}/></RoutedServer>}/>
+          <Route path={public_url + '/:server/:bundleid'} element={<RoutedServer {...this.props} app={this}><Bundle app={this}/></RoutedServer>}/>
+          <Route path={public_url + '/:server'} element={<RoutedServer {...this.props} app={this}><RoutedSplashBundle app={this}/></RoutedServer>}/>
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </MyRouter>
@@ -289,10 +287,10 @@ class Server extends Component {
   // becomes bloated, it may be nice to have that code separation by moving
   // all server-related logic here.
   componentDidUpdate() {
-    let server = useParams();
+    let server = this.props.match.params.server;
 
-    if (server !== this.props.app.state.serverHost && !this.props.app.state.allowDisconnectReadonly) {
-      // NOTE must be !=, not !==
+    if (server != this.props.app.state.serverHost && !this.props.app.state.allowDisconnectReadonly) {
+      // NOTE must be !=, not !==, otherwise I get recursion errors
       if (server) {
         // this.props.app.setState({serverHost: server})
         console.log("connecting to server because of URL")
@@ -311,7 +309,7 @@ class Server extends Component {
 
     let clientid
     if (isElectron()) {
-      clientid = window.require('electron').remote.getGlobal('clientid');
+      clientid = window.ElectronAPI.getClientId();
     } else {
       clientid = "web-"+randomstr(5);
     }
@@ -341,6 +339,6 @@ class Server extends Component {
   }
 }
 
-
+const RoutedServer = withRouter(Server);
 
 export default App;

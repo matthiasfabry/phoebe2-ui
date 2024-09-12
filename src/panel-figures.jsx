@@ -163,7 +163,7 @@ export class FigureThumb extends React.Component {
   }
   render() {
     // randomstr at end of URL forces the browser to reload the image instead of relying on cached version
-    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
     return (
       <div className="ReactFigureThumb">
         <img width="100%" src={url} onClick={this.onClick}></img>
@@ -242,7 +242,7 @@ class FigureMPLButton extends React.Component {
     };
   }
   onClick = () => {
-    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure_afig/'+this.props.figure
+    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure_afig/'+this.props.figure
 
     console.log("FigureMPLButton.onClick")
     if (this.props.app.state.isElectron) {
@@ -310,7 +310,7 @@ class FigurePopoutButton extends React.Component {
     };
   }
   onClick = (e) => {
-    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
     let win = popUpWindow(url, window.location.search);
     // TODO: callback to remove from childrenWindows when manually closed?
     this.props.bundle.childrenWindows.push(win);
@@ -332,7 +332,7 @@ class FigureSaveButton extends React.Component {
   onClick = () => {
     // console.log("FigureSaveButton clicked");
     alert("saving figures coming soon");
-    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
     // let win = popUpWindow(url, window.location.search);
   }
   render() {
@@ -363,11 +363,7 @@ export class FigurePanelWidth extends React.Component {
         </div>
       )
     }
-
-
-    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
-
-
+    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
     return (
       <img style={{display: "block", marginLeft: "auto", marginRight: "auto", maxWidth: "600px"}} src={url}></img>
     );
@@ -385,14 +381,11 @@ export class FigureFullScreen extends React.Component {
   }
   render() {
     let app = this.props.app;
-
     if (this.props.figure==null) {
       return null;
     }
 
-    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
-
-
+    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
     return (
       <div className="ReactFigureFullScreen" style={this.props.visible ? {} : { display: 'none' }}>
         <h2>{this.props.figure}</h2>

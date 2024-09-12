@@ -8,6 +8,7 @@ const path = require('path');
 const url = require('url');
 
 const electron = require('electron');
+const { ipcMain } = require('electron');
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
@@ -106,7 +107,8 @@ function createWindow() {
       height: 800,
       minHeight: 500,
       icon: __dirname + '/icons/phoebe.png',
-      webPreferences: { nodeIntegration: true }
+      webPreferences: {
+          preload: path.join(__dirname, '/../build/preload.js') }
     });
 
     // and load the index.html of the app.
@@ -116,7 +118,7 @@ function createWindow() {
             slashes: true
         });
     console.log(startUrl)
-    mainWindow.loadURL(startUrl);
+    mainWindow.loadURL(startUrl).then(r => {});
     // Open the DevTools.
     // mainWindow.webContents.openDevTools();
 
@@ -126,7 +128,7 @@ function createWindow() {
         e.preventDefault();
 
         if (global.pyPort) {
-          fetch("http://localhost:"+global.pyPort+"/info")
+          fetch("https://localhost:"+global.pyPort+"/info")
             .then(res => res.json())
             .then(json => {
               let choice = 0
@@ -309,3 +311,13 @@ app.on('will-quit', killChildProcessServer);
 //   console.log('setting as protocolclient for phoebe')
 //   app.setAsDefaultProtocolClient('phoebe')
 // }
+
+// Use IPC to send the global variables to the renderer
+ipcMain.handle('get-clientid', () => {
+  return global.clientid
+})
+
+ipcMain.handle('get-pyport', () => {
+    return global.pyPort
+})
+

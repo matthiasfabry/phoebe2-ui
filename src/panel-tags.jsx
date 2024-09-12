@@ -3,7 +3,7 @@ import {redirect} from 'react-router-dom';
 
 // import ReactQueryParams from 'react-query-params'; // https://github.com/jeff3dx/react-query-params
 
-import {Link, generatePath} from './common';
+import {generatePath} from './common';
 import {Panel} from './ui';
 
 class TagHeaderButton extends Component {
@@ -46,7 +46,7 @@ class TagClearFilterButton extends Component{
     if (this.props.group) {
       this.props.app.setQueryParams({[this.props.group]: []})
     } else {
-      // var currentthis.props.currentGroupFilter
+      // let currentthis.props.currentGroupFilter
       Object.keys(this.props.app.queryParams).forEach(group => {
         if (["pinned", "orderBy", "advanced", "hideChecks", "lastActive"].indexOf(group) === -1) {
           this.props.app.setQueryParams({[group]: []})
@@ -55,7 +55,7 @@ class TagClearFilterButton extends Component{
     }
   }
   render() {
-    var showButton = false;
+    let showButton = false;
     if (this.props.group) {
       if (this.props.app.queryParams[this.props.group] && this.props.app.queryParams[this.props.group].length > 0) {
         showButton = true;
@@ -73,7 +73,7 @@ class TagClearFilterButton extends Component{
       showButton = false;
     }
 
-    var title = "reset filter"
+    let title = "reset filter"
 
     if (this.props.group==='pinned') {
       title = "clear pinned parameters"
@@ -81,7 +81,7 @@ class TagClearFilterButton extends Component{
       title = "clear "+this.props.group+" filter"
     }
 
-    var padding = this.props.padding || "6px"
+    let padding = this.props.padding || "6px"
 
     return (
       <div style={{width: "100%", padding: padding, textAlign: "center"}}>
@@ -103,13 +103,13 @@ class TagOnlyPinnedButton extends Component {
     }
   }
   addToFilter = () => {
-    var currentAdvanced = this.props.app.queryParams.advanced || []
-    var newAdvanced = currentAdvanced.concat("onlyPinned")
+    let currentAdvanced = this.props.app.queryParams.advanced || []
+    let newAdvanced = currentAdvanced.concat("onlyPinned")
     this.props.app.setQueryParams({advanced: newAdvanced})
   }
   removeFromFilter = () => {
     let newAdvanced;
-    var currentAdvanced = this.props.app.queryParams.advanced || []
+    let currentAdvanced = this.props.app.queryParams.advanced || []
     if (this.props.app.queryParams.length===1) {
       newAdvanced = [ ];
     } else {
@@ -130,8 +130,8 @@ class TagOnlyPinnedButton extends Component {
     this.componentDidUpdate();
   }
   componentDidUpdate() {
-    var advanced = this.props.app.queryParams.advanced || []
-    var selected = advanced.indexOf("onlyPinned")!==-1
+    let advanced = this.props.app.queryParams.advanced || []
+    let selected = advanced.indexOf("onlyPinned")!==-1
     if (selected !== this.state.selected) {
       this.setState({selected: selected})
     }
@@ -166,7 +166,7 @@ export class Tag extends Component {
     }
   }
   addToFilter = () => {
-    var newGroupFilter = this.state.currentGroupFilter.concat(this.props.tag)
+    let newGroupFilter = this.state.currentGroupFilter.concat(this.props.tag)
     this.props.app.setQueryParams({[this.props.group]: newGroupFilter})
   }
   removeFromFilter = () => {
@@ -200,7 +200,7 @@ export class Tag extends Component {
         this.setState({currentGroupFilter: this.props.currentGroupFilter})
       }
     } else {
-      var currentGroupFilter = this.props.app.queryParams[this.props.group.toLowerCase()] || null
+      let currentGroupFilter = this.props.app.queryParams[this.props.group.toLowerCase()] || null
       if (currentGroupFilter !== this.state.currentGroupFilter && currentGroupFilter != null) {
         this.setState({currentGroupFilter: currentGroupFilter})
       }
@@ -208,12 +208,12 @@ export class Tag extends Component {
 
 
     if (this.state.currentGroupFilter) {
-      var selected = this.state.currentGroupFilter.indexOf(this.props.tag)!==-1
+      let selected = this.state.currentGroupFilter.indexOf(this.props.tag)!==-1
       if (selected !== this.state.selected) {
         this.setState({selected: selected})
       }
 
-      var isAvailable = this.isAvailable();
+      let isAvailable = this.isAvailable();
 
       if (isAvailable !== this.state.isAvailable) {
         this.setState({isAvailable: isAvailable})
@@ -225,10 +225,10 @@ export class Tag extends Component {
     this.componentDidUpdate()
   }
   render() {
-    var className = "btn btn-tag"
-    var iconClassName = "fas fa-fw"
-    var title = "add to filter"
-    var style={}
+    let className = "btn btn-tag"
+    let iconClassName = "fas fa-fw"
+    let title = "add to filter"
+    let style={}
     if (this.state.selected) {
       className += " btn-tag-selected"
       iconClassName += " fa-times"
@@ -244,7 +244,7 @@ export class Tag extends Component {
 
 
 
-    var iconStyle = {}
+    let iconStyle = {}
     if (!this.state.hover) {
       iconStyle.color = 'transparent'
     }
@@ -286,7 +286,7 @@ class TagGroup extends Component {
     this.componentDidUpdate();
   }
   componentDidUpdate() {
-    var currentGroupFilter = this.props.app.queryParams[this.props.title.toLowerCase()] || []
+    let currentGroupFilter = this.props.app.queryParams[this.props.title.toLowerCase()] || []
     if (currentGroupFilter.length !== this.state.currentGroupFilter.length) {
       this.setState({currentGroupFilter: currentGroupFilter})
     }
@@ -296,21 +296,21 @@ class TagGroup extends Component {
     //   return (<redirect to={this.state.redirect}/>)
     // }
 
-    var group = this.props.title.toLowerCase()
-    var tags = this.props.tags || [];
-    // var currentGroupFilter = this.props.app.queryParams[this.props.group] || []
+    let group = this.props.title.toLowerCase()
+    let tags = this.props.tags || [];
+    // let currentGroupFilter = this.props.app.queryParams[this.props.group] || []
 
     return (
       <React.Fragment>
         <div className='phoebe-tag-header' onClick={this.toggleExpanded}>
           {this.props.title}
           <div style={{float: "right"}}>
-            {this.props.other && group=='dataset' && this.props.bundle.state.tags.datasets && this.props.bundle.state.tags.datasets.length ?
+            {this.props.other && group==='dataset' && this.props.bundle.state.tags.datasets && this.props.bundle.state.tags.datasets.length ?
               <TagHeaderButton app={this.props.app} bundle={this.props.bundle} bundleid={this.props.bundleid} to={'import_data'} iconClassNames="fas fa-fw fa-upload"/>
               :
               null
             }
-            {this.props.other && group=='model' && this.props.bundle.state.tags.models && this.props.bundle.state.tags.models.length ?
+            {this.props.other && group==='model' && this.props.bundle.state.tags.models && this.props.bundle.state.tags.models.length ?
               <TagHeaderButton app={this.props.app} bundle={this.props.bundle} bundleid={this.props.bundleid} to={'export_data'} iconClassNames="fas fa-fw fa-download"/>
               :
               null
@@ -342,8 +342,6 @@ class TagGroup extends Component {
               :
               <div style={{display: "inline-block", width: "34px"}}>&nbsp;</div>
             }
-
-
           </div>
         </div>
         {this.state.expanded ?
@@ -375,7 +373,7 @@ class FilterBox extends Component {
     this.setState({expanded: !this.state.expanded})
   }
   toggleCheckbox = (advanced, checked) => {
-    var currentAdvanced = this.props.app.queryParams.advanced || []
+    let currentAdvanced = this.props.app.queryParams.advanced || []
     let newAdvanced
     if (checked) {
       newAdvanced = currentAdvanced.concat(advanced)
@@ -401,10 +399,10 @@ class FilterBox extends Component {
     this.toggleCheckbox("is_advanced", e.currentTarget.checked)
   }
   render() {
-    var pinned = this.props.app.queryParams.pinned || []
+    let pinned = this.props.app.queryParams.pinned || []
 
-    var advanced = this.props.app.queryParams.advanced || []
-    var advancedOnlyPinned = advanced.indexOf("onlyPinned")!==-1
+    let advanced = this.props.app.queryParams.advanced || []
+    let advancedOnlyPinned = advanced.indexOf("onlyPinned")!==-1
 
     return (
       <div className="phoebe-parameter" style={{padding: "10px"}}>
@@ -439,9 +437,6 @@ class FilterBox extends Component {
           </React.Fragment>
 
         }
-
-
-
       </div>
     )
   }
@@ -458,7 +453,7 @@ class ChecksBox extends Component {
     this.setState({expanded: !this.state.expanded})
   }
   // toggleCheckbox = (item, checked) => {
-  //   var currentChecks = this.props.app.queryParams.checks || []
+  //   let currentChecks = this.props.app.queryParams.checks || []
   //   let newChecks
   //   if (checked) {
   //     newChecks = currentChecks.concat(item)
@@ -477,25 +472,24 @@ class ChecksBox extends Component {
   //   this.toggleCheckbox("constraints", e.currentTarget.checked)
   // }
   toggleViewMessages = (e) => {
-    var currentChecks = this.props.app.queryParams.hideChecks || false
+    let currentChecks = this.props.app.queryParams.hideChecks || false
     this.props.app.setQueryParams({hideChecks: !currentChecks})
   }
   render() {
-    var status = this.props.bundle.state.checksStatus
+    let status = this.props.bundle.state.checksStatus
 
-    var hidingChecks = this.props.app.queryParams.hideChecks || false
+    let hidingChecks = this.props.app.queryParams.hideChecks || false
 
-    var viewingChecksToggleTitle = 'hide messages'
+    let viewingChecksToggleTitle = 'hide messages'
     if (hidingChecks) {
       viewingChecksToggleTitle = 'view messages'
     }
 
+    let style = {padding: "10px"}
 
-    var style = {padding: "10px"}
-
-    if (status == 'FAIL') {
+    if (status === 'FAIL') {
       style.backgroundColor = 'rgba(255,0,0,0.2)';
-    } else if (status == 'WARNING') {
+    } else if (status === 'WARNING') {
       style.backgroundColor = 'rgba(255,255,0,0.2)';
     }
 
@@ -512,7 +506,7 @@ class ChecksBox extends Component {
 
 export class TagPanel extends Component {
   render() {
-    var tags = this.props.bundle.state.tags || {}
+    let tags = this.props.bundle.state.tags || {}
     return (
       <Panel inactive={this.props.inactive} app={this.props.app} bundle={this.props.bundle}>
         <FilterBox app={this.props.app} bundle={this.props.bundle}/>

@@ -27,21 +27,21 @@ class Checkbox extends Component {
     this.props.onClick();
   }
   render() {
-    var classNames = "fa-fw fa-square"
+    let classNames = "fa-fw fa-square"
     if ((this.props.checked && !this.state.hover) || (!this.props.checked && this.state.hover)) {
       classNames += " fas"
     } else {
       classNames += " far"
     }
 
-    var title = this.props.title || null;
+    let title = this.props.title || null;
     if (this.props.checked && this.props.checkedTitle) {
       title = this.props.checkedTitle
     } else if (!this.props.checked && this.props.uncheckedTitle) {
       title = this.props.uncheckedTitle
     }
 
-    var style = {...this.props.style, color: "#2B71B1", cursor: "pointer"}
+    let style = {...this.props.style, color: "#2B71B1", cursor: "pointer"}
 
     if (!this.props.pinnable && !this.props.checked) {
       // then we only allow unpinning, not pinning.  So disable pointer events
@@ -168,12 +168,12 @@ class Parameter extends Component {
     this.toggleExpandedUnit(e)
   }
   addToPinned = () => {
-    var pinned = this.props.app.queryParams.pinned || []
-    var newPinned = pinned.concat(this.props.uniqueid)
+    let pinned = this.props.app.queryParams.pinned || []
+    let newPinned = pinned.concat(this.props.uniqueid)
     this.props.app.setQueryParams({pinned: newPinned})
   }
   removeFromPinned = () => {
-    var pinned = this.props.app.queryParams.pinned || []
+    let pinned = this.props.app.queryParams.pinned || []
     let newPinned;
     if (pinned.length===1) {
       newPinned = [ ];
@@ -194,21 +194,21 @@ class Parameter extends Component {
   gotoAction = (newAction, newRedirectArgs={}) => {
     this.props.app.setQueryParams({tmp: []})
     this.props.bundle.setState({redirectArgs: newRedirectArgs})
-    var url = generatePath(this.props.app.state.serverHost, this.props.bundle.state.bundleid, newAction, this.props.app.getSearchString())
+    let url = generatePath(this.props.app.state.serverHost, this.props.bundle.state.bundleid, newAction, this.props.app.getSearchString())
     this.setState({redirect: url})
   }
   componentDidMount() {
     this.componentDidUpdate();
   }
   componentDidUpdate() {
-    var pinned = this.props.app.queryParams.pinned || []
-    var ispinned = pinned.indexOf(this.props.uniqueid) !== -1
+    let pinned = this.props.app.queryParams.pinned || []
+    let ispinned = pinned.indexOf(this.props.uniqueid) !== -1
     if (ispinned !== this.state.pinned) {
       this.setState({pinned: ispinned})
     }
 
-    var active = this.props.PSPanel.state.activeParameter===this.props.uniqueidkey || this.props.bundle.state.paramsfilteredids.length===1;
-    var expandedDetails = active && this.props.PSPanel.state.activeParameterDetails
+    let active = this.props.PSPanel.state.activeParameter===this.props.uniqueidkey || this.props.bundle.state.paramsfilteredids.length===1;
+    let expandedDetails = active && this.props.PSPanel.state.activeParameterDetails
     if (expandedDetails !== this.state.expandedDetails) {
       this.setState({expandedDetails: expandedDetails})
       if (expandedDetails && !this.expandFromClick) {
@@ -220,12 +220,12 @@ class Parameter extends Component {
       }
     }
 
-    var expandedValue = active && this.props.PSPanel.state.activeParameterValue
+    let expandedValue = active && this.props.PSPanel.state.activeParameterValue
     if (expandedValue != this.state.expandedValue) {
       this.setState({expandedValue: expandedValue})
     }
 
-    var expandedUnit = active && this.props.PSPanel.state.activeParameterUnit
+    let expandedUnit = active && this.props.PSPanel.state.activeParameterUnit
     if (expandedUnit != this.state.expandedUnit) {
       this.setState({expandedUnit: expandedUnit})
     }
@@ -259,7 +259,7 @@ class Parameter extends Component {
       this.setState({receivedDetails: true})
 
       this.abortGetDetailsController = new window.AbortController();
-      abortableFetch("http://"+this.props.app.state.serverHost+"/parameter/"+this.props.bundle.state.bundleid+"/"+this.props.uniqueid, {signal: this.abortGetDetailsController.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
+      abortableFetch("https://"+this.props.app.state.serverHost+"/parameter/"+this.props.bundle.state.bundleid+"/"+this.props.uniqueid, {signal: this.abortGetDetailsController.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
         .then(res => res.json())
         .then(json => {
           if (json.data.success) {
@@ -349,7 +349,7 @@ class Parameter extends Component {
       }
     } else if (!this.state.expandedUnit) {
       color = this.props.paramOverview.readonly ? "slategray" : "black"
-      var title = "value="+this.props.paramOverview.valuestr
+      let title = "value="+this.props.paramOverview.valuestr
       if (this.props.bundle.state.failedConstraints.indexOf(this.props.uniqueid)!==-1) {
         // then this parameter's value is out-of-date because of a failed
         // constraint that needs to be addressed
@@ -362,7 +362,7 @@ class Parameter extends Component {
     }
 
     let inlineUnitContent
-    if (this.props.paramOverview.qualifier == 'detached_job' && (this.props.paramOverview.valuestr === 'running' || this.props.paramOverview.valuestr.indexOf("progress:")!==-1)) {
+    if (this.props.paramOverview.qualifier === 'detached_job' && (this.props.paramOverview.valuestr === 'running' || this.props.paramOverview.valuestr.indexOf("progress:")!==-1)) {
       inlineUnitContent = <span className="fas fa-fw fa-skull-crossbones" title={"terminate running job"} onClick={()=>this.props.bundle.emit('bundle_method', {'method': 'kill_job', 'uniqueid': this.props.uniqueid})} style={{color: "red", display: "inline-block", width: "65px", paddingLeft: "5px", paddingBottom: "3px", overflowX: "hidden"}}></span>
     } else if (this.state.expandedUnit) {
       inlineUnitContent = <span style={{verticalAlign: "super"}}>
@@ -376,9 +376,9 @@ class Parameter extends Component {
                           </span>
     }
 
-    var statusBarStyle = {}
+    let statusBarStyle = {}
     if (['detached_job', 'imported_job'].indexOf(this.props.paramOverview.qualifier) !== -1 && this.props.paramOverview.valuestr.indexOf("progress:")!==-1) {
-      var progress = this.props.paramOverview.valuestr.split("progress:")[1]
+      let progress = this.props.paramOverview.valuestr.split("progress:")[1]
       statusBarStyle.backgroundImage = "linear-gradient(90deg, rgba(43, 113, 177, 0.3) "+progress+", #FFFFFF "+progress+")"
     }
 
@@ -569,8 +569,8 @@ class ParameterDetailsItemPin extends Component {
     this.abortGetDetailsController = null;
   }
   addToPinned = () => {
-    var pinned = this.props.app.queryParams.pinned || []
-    var newPinned = pinned.concat(this.props.uniqueid)
+    let pinned = this.props.app.queryParams.pinned || []
+    let newPinned = pinned.concat(this.props.uniqueid)
     this.props.app.setQueryParams({pinned: newPinned})
   }
   expandParameter = () => {
@@ -580,10 +580,10 @@ class ParameterDetailsItemPin extends Component {
     this.props.PSPanel.setState({activeParameter: 'PS:'+this.props.uniqueid})
   }
   popParameter = () => {
-    var bundleid = this.props.bundle.state.bundleid || this.props.bundle.match.params.bundleid
+    let bundleid = this.props.bundle.state.bundleid || this.props.bundle.match.params.bundleid
 
-    var url = generatePath(this.props.app.state.serverHost, bundleid, 'ps');
-    var win = popUpWindow(url, `?advanced=["onlyPinned"]&pinned=["${this.props.uniqueid}"]`);
+    let url = generatePath(this.props.app.state.serverHost, bundleid, 'ps');
+    let win = popUpWindow(url, `?advanced=["onlyPinned"]&pinned=["${this.props.uniqueid}"]`);
     // TODO: callback to remove from childrenWindows when manually closed?
     this.props.bundle.childrenWindows.push(win);
   }
@@ -591,24 +591,24 @@ class ParameterDetailsItemPin extends Component {
     if (this.state.peakDistributionImgs.length) {
       this.setState({peakDistributionImgs: []})
     } else {
-      var dist_param = this.props.bundle.state.params[this.props.uniqueid];
+      let dist_param = this.props.bundle.state.params[this.props.uniqueid];
 
-      var distribution = dist_param.distribution
-      var urls = ["http://"+this.props.app.state.serverHost+"/"+this.props.bundle.state.bundleid+"/distribution_plot/"+this.props.param.props.uniqueid+"/"+distribution]
+      let distribution = dist_param.distribution
+      let urls = ["https://"+this.props.app.state.serverHost+"/"+this.props.bundle.state.bundleid+"/distribution_plot/"+this.props.param.props.uniqueid+"/"+distribution]
       this.setState({peakDistributionImgs: urls})
 
       this.abortGetDetailsController = new window.AbortController();
-      abortableFetch("http://"+this.props.app.state.serverHost+"/parameter/"+this.props.bundle.state.bundleid+"/"+this.props.uniqueid, {signal: this.abortGetDetailsController.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
+      abortableFetch("https://"+this.props.app.state.serverHost+"/parameter/"+this.props.bundle.state.bundleid+"/"+this.props.uniqueid, {signal: this.abortGetDetailsController.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
         .then(res => res.json())
         .then(json => {
           if (json.data.success) {
             console.log("received parameter details for distribution parameter")
             console.log(json.data.parameter);
 
-            var dist_param_referenced_uniqueid = Object.keys(json.data.parameter.referenced_parameter)[0]
+            let dist_param_referenced_uniqueid = Object.keys(json.data.parameter.referenced_parameter)[0]
             console.log(dist_param_referenced_uniqueid)
             if (dist_param_referenced_uniqueid !== this.props.param.props.uniqueid) {
-              urls.unshift("http://"+this.props.app.state.serverHost+"/"+this.props.bundle.state.bundleid+"/distribution_plot/"+dist_param_referenced_uniqueid+"/"+distribution)
+              urls.unshift("https://"+this.props.app.state.serverHost+"/"+this.props.bundle.state.bundleid+"/distribution_plot/"+dist_param_referenced_uniqueid+"/"+distribution)
               this.setState({peakDistributionImgs: urls})
             }
 
@@ -629,7 +629,7 @@ class ParameterDetailsItemPin extends Component {
     }
   }
   render() {
-    var isCurrentlyVisible = this.props.bundle.state.paramsfilteredids.indexOf(this.props.uniqueid) !== -1
+    let isCurrentlyVisible = this.props.bundle.state.paramsfilteredids.indexOf(this.props.uniqueid) !== -1
 
     return (
       <React.Fragment>
@@ -674,19 +674,19 @@ class Input extends Component {
     this.refinput = React.createRef();
   }
   onChange = (e) => {
-    var value = null;
-    if (this.props.type == 'float') {
+    let value = null;
+    if (this.props.type === 'float') {
       value = e.target.value.replace(/[^0-9.-]/g, '');
-    } else if (this.props.type == 'floatunits') {
+    } else if (this.props.type === 'floatunits') {
       // allow space and [a-z,A-Z] as well as / if units
       value = e.target.value.replace(/[^0-9A-Za-z.-\s\/]/g, '');
-    } else if (this.props.type == 'int') {
+    } else if (this.props.type === 'int') {
       value = e.target.value.replace(/[^0-9-]/g, '');
-    } else if (this.props.type == 'array') {
-      value = e.target.value.replace(/[^0-9-\.\,]/g, '');
-    } else if (this.props.type == 'choice') {
+    } else if (this.props.type === 'array') {
+      value = e.target.value.replace(/[^0-9-.,]/g, '');
+    } else if (this.props.type === 'choice') {
       value = e.value
-    } else if (this.props.type == 'select') {
+    } else if (this.props.type === 'select') {
       if (e) {
         value = e.map((item) => item.value)
       } else {
@@ -717,37 +717,37 @@ class Input extends Component {
 
 
     if (this.props.type==='choice' || this.props.type==='select') {
-      var width = this.props.width || "185px"
-      var choices = this.props.choices || [];
-      var choicesList = choices.map((choice) => ({value: choice, label: choice}))
+      let width = this.props.width || "185px"
+      let choices = this.props.choices || [];
+      let choicesList = choices.map((choice) => ({value: choice, label: choice}))
 
       if (this.props.type==='choice') {
-        var className = 'phoebe-parameter-choice'
-        var defaultValueList = {value: this.props.origValue, label: this.props.origValue}
-        var valueList = {value: this.state.value, label: this.state.value} || null
-        var isMulti = false
+        let className = 'phoebe-parameter-choice'
+        let defaultValueList = {value: this.props.origValue, label: this.props.origValue}
+        let valueList = {value: this.state.value, label: this.state.value} || null
+        let isMulti = false
       } else if (this.props.type==='select') {
         width = "calc(100% - 80px)"
-        var className = 'phoebe-parameter-select'
+        let className = 'phoebe-parameter-select'
         if (this.props.origValue) {
-          var defaultValueList = this.props.origValue.map((choice) => ({value: choice, label: choice}))
+          let defaultValueList = this.props.origValue.map((choice) => ({value: choice, label: choice}))
         } else {
-          var defaultValueList = null
+          let defaultValueList = null
         }
 
-        var value = this.state.value
+        let value = this.state.value
         if (value) {
-          var valueList = value.map((choice) => ({value: choice, label: choice}))
+          let valueList = value.map((choice) => ({value: choice, label: choice}))
         } else {
-          var valueList = defaultValueList
+          let valueList = defaultValueList
         }
 
-        var isMulti = true
+        let isMulti = true
       }
 
       if (this.props.origValue) {
       } else {
-        var defaultValueList = null
+        let defaultValueList = null
       }
 
       if (isMulti) {
@@ -764,7 +764,7 @@ class Input extends Component {
           </span>
         )
       }
-    } else if (this.props.type == 'array') {
+    } else if (this.props.type === 'array') {
       return (
         <span>
           <input ref={this.refinput} id={this.props.id} type="text" style={{marginLeft: "10px", marginRight: "10px", width: "calc(100% - 80px)", height: "26px", borderRadius: "4px", border: "1px solid lightgray"}} name="value" title="value" value={this.state.value || this.props.origValue} onChange={this.onChange}/>
@@ -806,19 +806,19 @@ class InputFloatArray extends Component {
     this.abortGetArgsForType = new window.AbortController();
 
     console.log("requesting conversion of nparray: "+JSON.stringify(value))
-    abortableFetch("http://"+this.props.app.state.serverHost+"/nparray/"+JSON.stringify(value), {signal: this.abortGetArgsForType.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
+    abortableFetch("https://"+this.props.app.state.serverHost+"/nparray/"+JSON.stringify(value), {signal: this.abortGetArgsForType.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
       .then(res => res.json())
       .then(json => {
         console.log(json)
         if (json.data.success) {
-          var args = json.data.response
+          let args = json.data.response
           // api won't return the original array (just to be cheaper)
           args[this.state.valueType] = this.props.parameter.state.details.value
 
           this.setState({args: args, argsLoaded: true})
 
           if (!this.state.userArgs[this.state.inputType]) {
-            var userArgs = this.state.userArgs
+            let userArgs = this.state.userArgs
             userArgs[this.state.inputType] = args[this.state.inputType]
             this.setState({userArgs: userArgs})
           }
@@ -844,7 +844,7 @@ class InputFloatArray extends Component {
   }
   onChange = (type, key, value) => {
     // console.log("onChange "+type+" "+key+" "+value)
-    var userArgs = this.state.userArgs
+    let userArgs = this.state.userArgs
 
     if (type==='array') {
       // this.updateArgs(value)
@@ -863,7 +863,7 @@ class InputFloatArray extends Component {
 
   }
   onChangeType = (type) => {
-    var userArgs = this.state.userArgs
+    let userArgs = this.state.userArgs
     if (!userArgs[type]) {
       userArgs[type] = this.state.args[type]
     }
@@ -884,7 +884,7 @@ class InputFloatArray extends Component {
   gotoAction = (newAction, newRedirectArgs={}) => {
     this.props.app.setQueryParams({tmp: []})
     this.props.bundle.setState({redirectArgs: newRedirectArgs})
-    var url = generatePath(this.props.app.state.serverHost, this.props.bundle.state.bundleid, newAction, this.props.app.getSearchString())
+    let url = generatePath(this.props.app.state.serverHost, this.props.bundle.state.bundleid, newAction, this.props.app.getSearchString())
     this.setState({redirect: url})
   }
   render() {
@@ -892,7 +892,7 @@ class InputFloatArray extends Component {
       return (<redirect to={this.state.redirect}/>)
     }
 
-    var btnStyle = {width: "calc(25% - 4px)", margin: "2px", textAlign: "center", lineHeight: "1em"}
+    let btnStyle = {width: "calc(25% - 4px)", margin: "2px", textAlign: "center", lineHeight: "1em"}
 
     if (this.state.inputType == null && this.props.parameter.state.details && this.props.parameter.state.details.value!==undefined) {
       const nparrayType = this.props.parameter.state.details.value.nparray || ''
@@ -907,19 +907,19 @@ class InputFloatArray extends Component {
 
     const disabledInputStyle = {marginLeft: "10px", marginRight: "10px", width: "calc(100% - 80px)", height: "26px", borderRadius: "4px", border: "1px solid lightgray"};
 
-    var args = this.state.args[this.state.inputType] || undefined;
-    if (this.state.inputType == 'array') {
+    let args = this.state.args[this.state.inputType] || undefined;
+    if (this.state.inputType === 'array') {
       args = this.state.args['arraystr'] || ''
     }
 
     if (args === undefined) {
-      return (null)
+      return null
     }
     // console.log("args for "+this.state.inputType+"(valueType="+this.state.valueType+"): ")
     // console.log(args)
 
-    var input = null
-    var belowInput = null
+    let input = null
+    let belowInput = null
     const spanLabelStyle = {padding: "2px", display: "inline-block"}
     const inputWidth = "80px"
     if (this.state.inputType === 'linspace') {
@@ -976,10 +976,10 @@ class InputFloatArray extends Component {
           <React.Fragment>
             <span>{belowInput}</span>
             <div>
-              <span className={this.state.inputType=='array' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('array')}}>array</span>
-              <span className={this.state.inputType=='linspace' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('linspace')}}>linspace</span>
-              <span className={this.state.inputType=='arange' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('arange')}}>arange</span>
-              <span className={this.state.inputType=='file' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.gotoAction('import_data', {'datasets': [this.props.parameter.props.paramOverview.dataset]})}}>file import</span>
+              <span className={this.state.inputType==='array' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('array')}}>array</span>
+              <span className={this.state.inputType==='linspace' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('linspace')}}>linspace</span>
+              <span className={this.state.inputType==='arange' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('arange')}}>arange</span>
+              <span className={this.state.inputType==='file' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.gotoAction('import_data', {'datasets': [this.props.parameter.props.paramOverview.dataset]})}}>file import</span>
             </div>
           </React.Fragment>
           :
@@ -1015,8 +1015,8 @@ class InputDistribution extends Component {
     }
 
     if (!this.state.current_face_value) {
-        var current_face_value_uniqueid = Object.keys(this.props.parameter.state.details.referenced_parameter)[0]
-        var current_face_value = this.props.bundle.state.params[current_face_value_uniqueid].valuestr
+        let current_face_value_uniqueid = Object.keys(this.props.parameter.state.details.referenced_parameter)[0]
+        let current_face_value = this.props.bundle.state.params[current_face_value_uniqueid].valuestr
         this.setState({current_face_value: current_face_value})
     }
 
@@ -1027,19 +1027,19 @@ class InputDistribution extends Component {
     this.abortGetArgsForType = new window.AbortController();
 
     console.log("requesting conversion of distl object: "+JSON.stringify(value)+ " current face value: "+this.state.current_face_value)
-    abortableFetch("http://"+this.props.app.state.serverHost+"/distl/"+JSON.stringify(value)+"/"+this.state.current_face_value, {signal: this.abortGetArgsForType.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
+    abortableFetch("https://"+this.props.app.state.serverHost+"/distl/"+JSON.stringify(value)+"/"+this.state.current_face_value, {signal: this.abortGetArgsForType.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
       .then(res => res.json())
       .then(json => {
         // console.log(json)
         if (json.data.success) {
-          var args = json.data.response
+          let args = json.data.response
           // api won't return the original array (just to be cheaper)
           args[this.state.valueType] = this.props.parameter.state.details.value
 
           this.setState({args: args, argsLoaded: true})
 
           if (!this.state.userArgs[this.state.inputType]) {
-            var userArgs = this.state.userArgs
+            let userArgs = this.state.userArgs
             userArgs[this.state.inputType] = args[this.state.inputType]
             this.setState({userArgs: userArgs})
           }
@@ -1065,7 +1065,7 @@ class InputDistribution extends Component {
   }
   onChange = (type, key, value) => {
     // console.log("onChange "+type+" "+key+" "+value)
-    var userArgs = this.state.userArgs
+    let userArgs = this.state.userArgs
 
     if (!userArgs[type]) {
       userArgs[type] = this.state.args[type]
@@ -1079,7 +1079,7 @@ class InputDistribution extends Component {
 
   }
   onChangeType = (type) => {
-    var userArgs = this.state.userArgs
+    let userArgs = this.state.userArgs
     if (!userArgs[type]) {
       userArgs[type] = this.state.args[type]
     }
@@ -1095,8 +1095,8 @@ class InputDistribution extends Component {
     this.setState({inputType: null})
   }
   render() {
-    // var btnStyle = {width: "calc(25% - 4px)", margin: "2px", textAlign: "center", lineHeight: "1em"}
-    var btnStyle = {width: "calc(33% - 4px)", margin: "2px", textAlign: "center", lineHeight: "1em"}
+    // let btnStyle = {width: "calc(25% - 4px)", margin: "2px", textAlign: "center", lineHeight: "1em"}
+    let btnStyle = {width: "calc(33% - 4px)", margin: "2px", textAlign: "center", lineHeight: "1em"}
 
     if (this.state.inputType == null && this.props.parameter.state.details && this.props.parameter.state.details.value!==undefined) {
       console.log(this.props.parameter.state.details.value)
@@ -1106,7 +1106,7 @@ class InputDistribution extends Component {
 
     const disabledInputStyle = {marginLeft: "10px", marginRight: "10px", width: "calc(100% - 80px)", height: "26px", borderRadius: "4px", border: "1px solid lightgray"};
 
-    var args = this.state.args[this.state.inputType] || undefined;
+    let args = this.state.args[this.state.inputType] || undefined;
 
     if (args === undefined) {
       return (null)
@@ -1114,7 +1114,7 @@ class InputDistribution extends Component {
     // console.log("args for "+this.state.inputType+"(valueType="+this.state.valueType+"): ")
     // console.log(args)
 
-    var belowInput = null
+    let belowInput = null
     const spanLabelStyle = {padding: "2px", display: "inline-block"}
     const inputWidth = "80px"
     if (this.state.inputType === 'Delta') {
@@ -1192,15 +1192,15 @@ class InputDistribution extends Component {
             <span onClick={this.props.parameter.submitSetValue} style={{marginLeft: "-10px"}} className="btn fa-fw fas fa-check" title="apply changes"/>
 
             <div>
-              <span className={this.state.inputType=='Delta' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Delta')}}>delta</span>
-              <span className={this.state.inputType=='Uniform' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Uniform')}}>uniform</span>
-              <span className={this.state.inputType=='Gaussian' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Gaussian')}}>gaussian</span>
+              <span className={this.state.inputType==='Delta' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Delta')}}>delta</span>
+              <span className={this.state.inputType==='Uniform' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Uniform')}}>uniform</span>
+              <span className={this.state.inputType==='Gaussian' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Gaussian')}}>gaussian</span>
               {/* <span className={this.state.inputType=='Other' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{alert("not yet implemented")}}>other</span> */}
             </div>
             <div>
-              <span className={this.state.inputType=='Delta_Around' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Delta_Around')}}>delta around</span>
-              <span className={this.state.inputType=='Uniform_Around' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Uniform_Around')}}>uniform around</span>
-              <span className={this.state.inputType=='Gaussian_Around' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Gaussian_Around')}}>gaussian around</span>
+              <span className={this.state.inputType==='Delta_Around' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Delta_Around')}}>delta around</span>
+              <span className={this.state.inputType==='Uniform_Around' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Uniform_Around')}}>uniform around</span>
+              <span className={this.state.inputType==='Gaussian_Around' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{this.onChangeType('Gaussian_Around')}}>gaussian around</span>
               {/* <span className={this.state.inputType=='Other' ? 'btn btn-primary btn-primary-active' : 'btn btn-primary'} style={btnStyle} onClick={()=>{alert("not yet implemented")}}>other</span> */}
             </div>
           </React.Fragment>
@@ -1239,21 +1239,21 @@ class InputConstraint extends Component {
     } else if (part.indexOf("{") === -1) {
       return <span>{part}</span>
     } else {
-      var twig = part.replace(/[{}]/g, '')
+      let twig = part.replace(/[{}]/g, '')
       if (isValid || this.props.parameter.state.details.validsolvefor.indexOf(twig) !== -1) {
-        return <span className={this.state.solve_for==twig ? 'btn btn-tag btn-tag-selected' : 'btn btn-tag btn-tag-unselected'} style={{width: 'fit-content', maxWidth: 'fit-content'}} title={'solve for '+twig} onClick={() => this.onChange(twig)}>{twig}</span>
+        return <span className={this.state.solve_for===twig ? 'btn btn-tag btn-tag-selected' : 'btn btn-tag btn-tag-unselected'} style={{width: 'fit-content', maxWidth: 'fit-content'}} title={'solve for '+twig} onClick={() => this.onChange(twig)}>{twig}</span>
       } else {
         return <span className='btn btn-tag btn-tag-disabled' style={{width: 'fit-content', maxWidth: 'fit-content'}} title={'cannot solve constraint for '+twig}>{twig}</span>
       }
     }
   }
   render() {
-    var parts = [];
+    let parts = [];
     if (this.props.parameter.state.details && this.props.parameter.state.details.value!==undefined) {
       parts = this.props.parameter.state.details.value.split(/(\{[a-zA-Z0-9_@]*\})/g)
     }
 
-    var constrains = null
+    let constrains = null
     if (this.props.parameter.state.details && this.props.parameter.state.details.constrains!==undefined) {
       constrains = Object.values(this.props.parameter.state.details.constrains)[0]
       if (this.state.solve_for === null) {
@@ -1274,7 +1274,7 @@ class ChecksReport extends Component {
   render() {
     return (
       <div className="phoebe-parameter" style={{padding: "10px"}}>
-        {this.props.checksReport.length == 0 ?
+        {this.props.checksReport.length === 0 ?
           <span style={{borderLeft: "4px solid rgba(0,255,0,0.6)", padding: "10px", marginBottom: "5px"}}><b>PASSING</b>: no errors or warnings to show</span>
           :
           null
@@ -1293,14 +1293,13 @@ class ChecksReport extends Component {
 class ChecksReportItem extends Component {
   render() {
 
-    var style = {padding: "10px", marginBottom: "5px"}
+    let style = {padding: "10px", marginBottom: "5px"}
 
-    if (this.props.report.level == 'ERROR') {
+    if (this.props.report.level === 'ERROR') {
       style.borderLeft = '4px solid rgba(255,0,0,0.6)';
-    } else if (this.props.report.level == 'WARNING') {
+    } else if (this.props.report.level === 'WARNING') {
       style.borderLeft = '4px solid rgba(255,255,0,1.0)';
     }
-
 
     return (
       <div style={style}>
@@ -1331,32 +1330,32 @@ export class PSPanel extends Component {
     this.prevNParams = 0;
   }
   popPS = () => {
-    var bundleid = this.props.bundleid || this.props.match.params.bundleid
+    let bundleid = this.props.bundleid || this.props.match.params.bundleid
 
-    var url = generatePath(this.props.app.state.serverHost, bundleid, 'ps');
-    var win = popUpWindow(url, window.location.search);
+    let url = generatePath(this.props.app.state.serverHost, bundleid, 'ps');
+    let win = popUpWindow(url, window.location.search);
     // TODO: callback to remove from childrenWindows when manually closed?
     this.props.bundle.childrenWindows.push(win);
   }
   orderByChanged = (e) => {
-    var value = "Context"
+    let value = "Context"
     if (e) {
       value = e.value
     }
     this.props.app.setQueryParams({orderBy: value})
   }
   render() {
-    var params = this.props.bundle.state.params || {}
-    var tags = this.props.bundle.state.tags || {}
+    let params = this.props.bundle.state.params || {}
+    let tags = this.props.bundle.state.tags || {}
 
-    var paramsFiltered = filterObjectByKeys(params, this.props.paramsFiltered || this.props.bundle.state.paramsfilteredids)
+    let paramsFiltered = filterObjectByKeys(params, this.props.paramsFiltered || this.props.bundle.state.paramsfilteredids)
     // animations can be laggy, and not even that effective, when there are a
     // lot of changes.  So we'll check the change in length as well as the
     // length itself (in the case of changing orderBy)
-    var enablePSAnimation = Math.abs(this.props.bundle.state.paramsfilteredids.length - this.prevNParams) <= 20 && this.props.bundle.state.paramsfilteredids.length <= 20;
+    let enablePSAnimation = Math.abs(this.props.bundle.state.paramsfilteredids.length - this.prevNParams) <= 20 && this.props.bundle.state.paramsfilteredids.length <= 20;
     this.prevNParams = this.props.bundle.state.paramsfilteredids.length
 
-    var orderBy = this.props.orderBy
+    let orderBy = this.props.orderBy
     if (!orderBy) {
       orderBy = this.props.app.queryParams.orderBy || 'context'
       if (this.props.disableFiltering) {
@@ -1364,11 +1363,11 @@ export class PSPanel extends Component {
       }
     }
 
-    var orderByDefault = {value: orderBy, label: orderBy}
-    var orderByTags = tags[orderBy+'s'] || []
+    let orderByDefault = {value: orderBy, label: orderBy}
+    let orderByTags = tags[orderBy+'s'] || []
     orderByTags = orderByTags.concat([null]);
 
-    var orderByChoices = [{value: "context", label: "context"},
+    let orderByChoices = [{value: "context", label: "context"},
                           {value: "kind", label: "kind"},
                           {value: "figure", label: "figure"},
                           {value: "component", label: "component"},
@@ -1418,26 +1417,19 @@ export class PSPanel extends Component {
 
               return <PSGroup app={this.props.app} bundle={this.props.bundle} PSPanel={this} orderBy={orderBy} orderByTag={orderByTag} paramsFiltered={paramsFiltered} enablePSAnimation={enablePSAnimation} PSPanelOnly={this.props.PSPanelOnly} disableFiltering={this.props.disableFiltering || false}/>
 
-
-
             })
-
-
-            :
-            <LogoSpinner pltStyle={{backgroundColor: "rgb(43, 113, 177)"}}/>
+            : <LogoSpinner pltStyle={{backgroundColor: "rgb(43, 113, 177)"}}/>
           }
         </div>
-
         {this.props.children}
-
       </Panel>
     )
   }
 }
 
-class PSGroup extends Component {
+export class PSGroup extends Component {
   render() {
-    var parameters = []
+    let parameters = []
     parameters = mapObject(this.props.paramsFiltered, (uniqueid, param) => {
       if (param[this.props.orderBy]===this.props.orderByTag) {
         return (<Parameter key={uniqueid} uniqueid={uniqueid} uniqueidkey={'PS:'+uniqueid} app={this.props.app} bundle={this.props.bundle} PSPanel={this.props.PSPanel} paramOverview={param} pinnable={!this.props.PSPanelOnly} disableFiltering={this.props.disableFiltering} description={param.description}/>)
@@ -1448,7 +1440,6 @@ class PSGroup extends Component {
       return (
         <div>
           <b key={this.props.orderByTag}>{this.props.orderBy}: {this.props.orderByTag===null ? "None" : this.props.orderByTag}</b>
-
           <FlipMove appearAnimation={false} enterAnimation="fade" leaveAnimation="fade" maintainContainerHeight={true} disableAllAnimations={!this.props.enablePSAnimation}>
             {parameters}
           </FlipMove>
