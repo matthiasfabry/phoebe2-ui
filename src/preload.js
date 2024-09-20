@@ -1,6 +1,10 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInIsolatedWorld(999, 'electronAPI', {
+contextBridge.exposeInMainWorld('electronAPI', {
     getClientId: () => ipcRenderer.invoke('get-clientid'),
     getPyPort: () => ipcRenderer.invoke('get-pyport'),
+    getArgs: () => ipcRenderer.invoke('get-args'),
+    launchChildProcessServer: () => ipcRenderer.invoke('launchChildProcessServer'),
+    ignoreArgs: () => ipcRenderer.invoke('ignoreArgs'),
+    setIgnoreArgs: () => ipcRenderer.invoke('setIgnoreArgs'),
 });

@@ -1,21 +1,13 @@
 import React, { Component } from 'react';
-import {redirect, useNavigate, useParams, useLocation} from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
-import {MyLink, generatePath, abortableFetch, getServerWarning} from './common';
+import {MyLink, generatePath, abortableFetch, getServerWarning, withRouter} from './common';
 
 // import {history} from './history';
 import {LogoSplash} from './logo';
 import {Statusbar} from './ui';
 
 let versionCompare = require('semver-compare');  // function that returns -1, 0, 1
-
-export function withRouter(Children){
-   return (props)=>{
-
-      const match  = {params: useParams()};
-      return <Children {...props}  match = {match}/>
-  }
-}
 
 class SplashServer extends Component {
   constructor(props) {
@@ -43,7 +35,7 @@ class SplashServer extends Component {
   componentDidMount() {
     if (this.props.match.params.bundleid && this.props.app.state.serverStatus==='connected') {
       // then we're trying to switch servers, so we need to download the current bundle before switching
-      let saveURL = "https://" + this.props.app.state.serverHost + "/save_bundle/" + this.props.match.params.bundleid
+      let saveURL = "http://" + this.props.app.state.serverHost + "/save_bundle/" + this.props.match.params.bundleid
       console.log("saving bundle from "+saveURL)
 
       this.abortSaveTransferController = new window.AbortController();
@@ -51,7 +43,7 @@ class SplashServer extends Component {
         .then(res => res.text())
         .then(json => {
           this.props.app.setState({bundleTransferJson: json})
-        }, err=> {
+        }, err => {
           // then we canceled the request
           console.log("received abort signal")
           this.props.app.setState({bundleTransferJson: null})
@@ -88,7 +80,7 @@ class SplashServer extends Component {
 
     let skipChildServer = false;
     if (this.props.app.state.isElectron) {
-      skipChildServer = window.require('electron').remote.getGlobal('pyPort') === null && window.require('electron').remote.getGlobal('args').n
+      skipChildServer = window.electronAPI.getPyPort() === null && window.electronAPI.getArgs().n
     }
 
     return(
@@ -96,7 +88,7 @@ class SplashServer extends Component {
         <Statusbar app={this.props.app} bundleid={null} dark={true}/>
         <LogoSplash animationEffect="animateShimmer"/>
 
-        {this.props.app.state.isElectron && window.require('electron').remote.getGlobal('args').w ?
+        {this.props.app.state.isElectron && window.electronAPI.getArgs().w ?
           null :
           <div className="splash-scrollable-header">
             {/* <p>Desktop application id: {remote.getGlobal('appid')}</p> */}
@@ -250,8 +242,8 @@ class ServerButton extends Component {
   }
   getInfo = (scanTimeout, cancelConnectIfFail) => {
     let location = this.props.location;
-    if (!location.startsWith("https://")) {
-      location = "https://" + location
+    if (!location.startsWith("http://")) {
+      location = "http://" + location
     }
 
     scanTimeout = scanTimeout || 0;
@@ -270,7 +262,9 @@ class ServerButton extends Component {
       // if any of this fails, we'll enter the catch section and ignore this matching
       // if the test succeeds, update the entry in component.state
       // this will then automatically queue a re-render of the underlying component
-      abortableFetch(location+"/info", {method: 'POST', body: JSON.stringify({client_version: this.props.app.state.clientVersion, clientid: this.props.app.state.clientid})})
+      abortableFetch(location+"/info", {method: 'POST', headers: {"Content-Type": "application/json"},
+                                                    body: JSON.stringify({client_version: this.props.app.state.clientVersion,
+                                                                                                clientid: this.props.app.state.clientid})})
         .then(res => res.json())
         .then(json => {
           this.setState({phoebeVersion: json.data.phoebe_version,
@@ -326,7 +320,7 @@ class ServerButton extends Component {
 
     if (this.state.status) {
       let doDisconnect = true
-      if (this.state.status==='connected') {
+      if (this.state.status === 'connected') {
         doDisconnect = confirm("Disconnecting will close the bundle and any unsaved changes will be lost.  Continue?")
       }
 
@@ -359,7 +353,7 @@ class ServerButton extends Component {
   render() {
     if (this.props.autoconnect && this.state.phoebeVersion && this.props.app.state.serverAllowAutoconnect && !this.state.status) {
       this.props.app.setState({serverAllowAutoconnect: false})
-      return <redirect to={generatePath(this.props.location)}/>
+      return <Navigate to={generatePath(this.props.location)}/>
     }
 
     let btnClassName = "btn btn-transparent"
@@ -410,7 +404,6 @@ class ServerButton extends Component {
         }
       }
     }
-
 
     let clientNeedsUpdate = false
     let serverNeedsUpdate = false
@@ -464,7 +457,6 @@ class ServerButton extends Component {
               <span className="far fa-fw fa-trash-alt" style={removeStyle} title="remove server from list"/>
             </span>
           }
-
         </MyLink>
       </div>
     )
@@ -485,7 +477,7 @@ class ServerInstallButton extends Component {
   }
   restartChildProcess = (e) => {
     console.log("ServerInstallButton.restartChildProcess")
-    window.require('electron').remote.getGlobal('launchChildProcessServer')()
+    window.electronAPI.launchChildProcessServer()
     this.props.app.getElectronChildProcessPort();
   }
   render() {

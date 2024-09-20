@@ -18,11 +18,11 @@ import {TagPanel} from './panel-tags';
 import {PSPanel} from './panel-ps';
 import {ActionPanel} from './panel-action';
 import {FigurePanel} from './panel-figures';
-import {generatePath, abortableFetch, mapObject, sameLists} from './common';
+import {generatePath, abortableFetch, mapObject, sameLists, withRouter} from './common';
 import {Toolbar, Statusbar} from './ui';
 
 
-export class Bundle extends Component {
+class Bundle extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -568,3 +568,5 @@ export class Bundle extends Component {
     )
   }
 }
+
+export default withRouter(Bundle)

@@ -82,11 +82,8 @@ global.ignoreArgs = false;
 const setIgnoreArgs = (v) => {
   global.ignoreArgs = v
 }
-global.setIgnoreArgs = setIgnoreArgs;
-
 
 const prompt = require('electron-prompt');
-
 
 // make sure the packaged version of chromium can display the built index.html file
 //app.commandLine.appendSwitch('allow-file-access');
@@ -108,7 +105,10 @@ function createWindow() {
       minHeight: 500,
       icon: __dirname + '/icons/phoebe.png',
       webPreferences: {
-          preload: path.join(__dirname, '/../build/preload.js') }
+          preload: path.join(__dirname, '/../build/preload.js'),
+          contextIsolation: true,
+          nodeIntegration: false
+      }
     });
 
     // and load the index.html of the app.
@@ -118,9 +118,9 @@ function createWindow() {
             slashes: true
         });
     console.log(startUrl)
-    mainWindow.loadURL(startUrl).then(r => {});
+    mainWindow.loadURL(startUrl);
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     // Confirm before closing the app as that will kill the child-process server
     mainWindow.on('close', function(e) {
@@ -128,7 +128,7 @@ function createWindow() {
         e.preventDefault();
 
         if (global.pyPort) {
-          fetch("https://localhost:"+global.pyPort+"/info")
+          fetch("http://localhost:"+global.pyPort+"/info")
             .then(res => res.json())
             .then(json => {
               let choice = 0
@@ -172,10 +172,24 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+    // Use IPC to expose variables and functions to the renderer
+    ipcMain.handle('get-clientid', () => { return global.clientid })
+    ipcMain.handle('get-pyport', () => { return global.pyPort })
+    ipcMain.handle('get-args', () => { return global.args })
+    ipcMain.handle('launchChildProcessServer', () => { return launchChildProcessServer })
+    ipcMain.handle('ignoreArgs', () => { return global.ignoreArgs })
+    ipcMain.handle('setIgnoreArgs', () => { return setIgnoreArgs })
+    ipcMain.handle('launchPythonClient', () => { return launchPythonClient })
+    ipcMain.handle('electronPrompt', () => { return electronPrompt })
+    ipcMain.handle('launchCommand', () => { return launchCommand })
+    ipcMain.handle('executeJSwithUserGesture', () => { return executeJSwithUserGesture })
+
+    createWindow()
+});
 
 // Quit when all windows are closed.
-app.on('window-all-closed', function () {
+app.on('window-all-closed', () => {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') {
@@ -183,7 +197,7 @@ app.on('window-all-closed', function () {
     }
 });
 
-app.on('activate', function () {
+app.on('activate', ()=> {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
@@ -204,7 +218,6 @@ app.on('activate', function () {
 const launchPythonClient = (terminal_cmd, terminal_execute_args, python_cmd, cmd) => {
   return child_process.spawn(terminal_cmd, terminal_execute_args.concat([python_cmd+' -i -c \"'+cmd+'\"']));
 }
-global.launchPythonClient = launchPythonClient;
 
 const electronPrompt = (title, label, value, width) => {
   prompt({
@@ -228,19 +241,16 @@ const electronPrompt = (title, label, value, width) => {
   // })
   .catch(console.error);
 }
-global.electronPrompt = electronPrompt;
 
 const launchCommand = (cmd) => {
     let cmd0 = cmd.split(' ')[0];
     let args = cmd.split(' ').slice(1);
     return child_process.spawn(cmd0, args);
 }
-global.launchCommand = launchCommand;
 
 const executeJSwithUserGesture = (code) => {
   return mainWindow.webContents.executeJavaScript(code, true)
 }
-global.executeJSwithUserGesture = executeJSwithUserGesture;
 
 function randomstr(N) {
   let text = "";
@@ -258,16 +268,11 @@ global.clientid = 'desktop-'+randomstr(5)
 let pyProc = null;
 let pyPort = null;
 
-const selectPort = () => {
-  // TODO: logic for scanning for an unused port or try except if 5000 is already used
-  return '5000';
-}
-
 const testAutofigInstalled = () => {
   let ret = child_process.spawnSync('phoebe-autofig');
   if (ret.stdout!==null) {
     return 'phoebe-autofig';
-  };
+  }
   ret = child_process.spawnSync('autofig');
   if (ret.stdout!==null) {
     return 'autofig';
@@ -279,8 +284,9 @@ global.testAutofigInstalled = testAutofigInstalled;
 
 global.pyPort = null;
 const launchChildProcessServer = () => {
-  // TODO: can we detect if phoebe-server is already running on this port and if so skip?  If something else is on this port, we should raise an error and exit or choose a new port
-  if (!pyPort) {
+    // TODO: can we detect if phoebe-server is already running on this port and if so skip?  If something else is on this port, we should raise an error and exit or choose a new port
+    console.log("launching child process server!")
+    if (!pyPort) {
     pyPort = options.argv.p || 5000;
     pyProc = child_process.spawn('phoebe-server', ['--port', pyPort, '--parent', global.clientid]);
     pyProc.on('error', () => {killChildProcessServer()});
@@ -294,7 +300,7 @@ global.launchChildProcessServer = launchChildProcessServer;
 const killChildProcessServer = () => {
   if (pyProc) {
     pyProc.kill();
-    // console.log('phoebe-server killed on port: '+global.pyPort);
+    console.log('phoebe-server killed on port: ' + global.pyPort);
   }
   pyProc = null;
   pyPort = null;
@@ -312,12 +318,4 @@ app.on('will-quit', killChildProcessServer);
 //   app.setAsDefaultProtocolClient('phoebe')
 // }
 
-// Use IPC to send the global variables to the renderer
-ipcMain.handle('get-clientid', () => {
-  return global.clientid
-})
-
-ipcMain.handle('get-pyport', () => {
-    return global.pyPort
-})
 

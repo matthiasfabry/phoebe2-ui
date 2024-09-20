@@ -3,7 +3,7 @@ import {redirect} from 'react-router-dom';
 
 import {MyLink, randomstr, generatePath, getServerWarning} from './common';
 
-var versionCompare = require('semver-compare');  // function that returns -1, 0, 1
+let versionCompare = require('semver-compare');  // function that returns -1, 0, 1
 
 export class Panel extends Component {
   render() {
@@ -70,7 +70,7 @@ export class Toolbar extends Component {
   }
   newBundle = () => {
     // TODO: only ask for confirmation if this is the only client attached to this bundle AND there are no unsaved changed
-    var text = ""
+    let text = ""
     // TODO: if unsaved changes only
     text += "You may lose any unsaved changed by closing the bundle.  "
     if (this.props.bundle && this.props.bundle.childrenWindows.length) {
@@ -78,7 +78,7 @@ export class Toolbar extends Component {
     }
     text += "Continue?"
 
-    var result = confirm(text)
+    let result = confirm(text)
     if (result) {
       this.props.bundle.closePopUps();
       this.props.app.clearQueryParams();
@@ -89,7 +89,7 @@ export class Toolbar extends Component {
   }
   openBundle = () => {
     // TODO: only ask for confirmation if this is the only client attached to this bundle AND there are no unsaved changed
-    var text = ""
+    let text = ""
     // TODO: if unsaved changes only
     text += "You may lose any unsaved changed by closing the bundle.  "
     if (this.props.bundle && this.props.bundle.childrenWindows.length) {
@@ -97,7 +97,7 @@ export class Toolbar extends Component {
     }
     text += "Continue?"
 
-    var result = confirm(text)
+    let result = confirm(text)
     if (result) {
       this.props.bundle.closePopUps();
       this.props.app.clearQueryParams();
@@ -122,7 +122,7 @@ export class Toolbar extends Component {
   launchPythonClient = () => {
     console.log("Bundle.launchPythonClient")
 
-    var code = 'import phoebe;'
+    let code = 'import phoebe;'
 
     const loglevel = this.props.app.getSettingFromStorage('python_loglevel') || 'warning'
     if (loglevel !== 'none') {
@@ -131,24 +131,24 @@ export class Toolbar extends Component {
     code += ' b=phoebe.Bundle.from_server(\''+this.props.bundleid+'\', \''+this.props.app.state.serverHost+'\');'
     console.log("python_cmd: "+python_cmd)
     console.log("code: "+code)
-    var terminal_cmd = this.props.app.getSettingFromStorage('terminal_cmd') || 'xterm -e'
+    let terminal_cmd = this.props.app.getSettingFromStorage('terminal_cmd') || 'xterm -e'
     if (this.props.app.state.isElectron) {
       if (terminal_cmd === 'paste') {
-        window.require('electron').remote.getGlobal('electronPrompt')('Manually launch Python client', 'Paste the following into your favorite Python console<br/>(or go to settings to configure automatic options): ', code, 450)
+        window.electronAPI.electronPrompt('Manually launch Python client', 'Paste the following into your favorite Python console<br/>(or go to settings to configure automatic options): ', code, 450)
       } else {
-        var python_cmd = this.props.app.getSettingFromStorage('python_cmd') || null;
+        let python_cmd = this.props.app.getSettingFromStorage('python_cmd') || null;
         if (python_cmd === null) {
           alert("must first confirm or choose the command to launch python shell from settings")
           return this.redirectSettings();
         }
         const s = terminal_cmd.indexOf(' ')
-        var terminal_args = []
+        let terminal_args = []
         if (s!==-1) {
           terminal_args = terminal_cmd.slice(s+1).split(' ')
         }
         console.log("terminal_cmd "+terminal_cmd.slice(0,s))
         console.log("terminal_args "+terminal_args)
-        window.require('electron').remote.getGlobal('launchPythonClient')(terminal_cmd.slice(0, s), terminal_args, python_cmd, code+'print(\\"'+code+'\\")');
+        window.electronAPI.launchPythonClient(terminal_cmd.slice(0, s), terminal_args, python_cmd, code+'print(\\"'+code+'\\")');
       }
     } else {
       prompt("Install the dedicated desktop application to automatically launch an interactive Python console.  From the web app, you can load this bundle in a Python console by manually pasting the following: ", code);
@@ -164,7 +164,7 @@ export class Toolbar extends Component {
       return <redirect to={this.state.redirect}/>
     }
 
-    var divStyle = {position: "absolute", left: 0, top: 0, width: "100%", height: "50px"}
+    let divStyle = {position: "absolute", left: 0, top: 0, width: "100%", height: "50px"}
 
     if (!this.props.dark) {
       divStyle.backgroundColor = "#2B71B1"
@@ -172,8 +172,8 @@ export class Toolbar extends Component {
       divStyle.color = "#D6D6D6"
     }
 
-    var nPollingJobs = Object.keys(this.props.bundle.state.pollingJobs).length;
-    // var nPollingJobs = 2
+    let nPollingJobs = Object.keys(this.props.bundle.state.pollingJobs).length;
+    // let nPollingJobs = 2
 
 
     return (
@@ -232,15 +232,15 @@ class UpdateButton extends Component {
 class ServerUpdateButton extends Component {
   render() {
     if (this.props.latestServerVersion === null || this.props.serverVersion === null) {
-      return (null)
+      return null
     }
-    const updateAvailable = versionCompare(this.props.serverVersion, this.props.latestServerVersion) == -1
+    const updateAvailable = versionCompare(this.props.serverVersion, this.props.latestServerVersion) === -1
     if (!updateAvailable) { // || this.props.serverVersion === 'devel'
-      return (null)
+      return null
     }
 
     return (
-      <UpdateButton href={"http://phoebe-project.org/releases/"+this.props.latestServerVersion.slice(0, this.props.latestServerVersion.lastIndexOf("."))} title={"install instructions for PHOEBE v"+this.props.latestServerVersion}>server v{this.props.latestServerVersion} available</UpdateButton>
+      <UpdateButton href={"https://phoebe-project.org/releases/"+this.props.latestServerVersion.slice(0, this.props.latestServerVersion.lastIndexOf("."))} title={"install instructions for PHOEBE v"+this.props.latestServerVersion}>server v{this.props.latestServerVersion} available</UpdateButton>
     )
   }
 }
@@ -248,16 +248,15 @@ class ServerUpdateButton extends Component {
 class ClientUpdateButton extends Component {
   render() {
     if (this.props.latestClientVersion === null || this. props.clientVersion === null) {
-      return (null)
+      return null
     }
-    const updateAvailable = versionCompare(this.props.clientVersion, this.props.latestClientVersion) == -1
+    const updateAvailable = versionCompare(this.props.clientVersion, this.props.latestClientVersion) === -1
     if (!updateAvailable) {
-      return (null)
+      return null
     }
-
 
     return (
-      <UpdateButton href="http://phoebe-project.org/clients" title={"download client v"+this.props.latestClientVersion}>client v{this.props.latestClientVersion} available</UpdateButton>
+      <UpdateButton href="https://phoebe-project.org/clients" title={"download client v"+this.props.latestClientVersion}>client v{this.props.latestClientVersion} available</UpdateButton>
     )
   }
 }
@@ -266,7 +265,7 @@ class ClientUpdateButton extends Component {
 export class Statusbar extends Component {
   changeServerWarning = (e) => {
     if (this.props.bundle && this.props.bundle.childrenWindows.length) {
-      var result = confirm('All popout windows will be closed when changing servers.  Continue?')
+      let result = confirm('All popout windows will be closed when changing servers.  Continue?')
       if (result) {
         this.props.bundle.closePopUps();
       } else {
@@ -277,7 +276,7 @@ export class Statusbar extends Component {
 
   }
   render() {
-    var divStyle = {position: "absolute", left: 0, bottom: 0, width: "100%", height: "28px", fontWeight: "400", fontSize: "0.93m"}
+    let divStyle = {position: "absolute", left: 0, bottom: 0, width: "100%", height: "28px", fontWeight: "400", fontSize: "0.93m"}
     if (!this.props.dark) {
       divStyle.backgroundColor = "#2B71B1"
       // divStyle.borderTop = "2px solid #456583"
@@ -293,14 +292,14 @@ export class Statusbar extends Component {
       serverPath = generatePath()
     }
 
-    var clientType = "web"
+    let clientType = "web"
     if (this.props.app.state.isElectron) {
       clientType = "desktop"
     }
 
-    var serverTitle = "The server is running PHOEBE "+this.props.app.state.serverPhoebeVersion+"."
-    var serverVersionStyle = {margin: "4px", border: "1px dotted #a1a1a1", paddingLeft: "2px", paddingRight: "2px"}
-    var serverWarning = getServerWarning(this.props.app.state.serverPhoebeVersion)
+    let serverTitle = "The server is running PHOEBE "+this.props.app.state.serverPhoebeVersion+"."
+    let serverVersionStyle = {margin: "4px", border: "1px dotted #a1a1a1", paddingLeft: "2px", paddingRight: "2px"}
+    let serverWarning = getServerWarning(this.props.app.state.serverPhoebeVersion)
     if (serverWarning) {
       serverVersionStyle.color = 'orange'
       serverTitle += '  The client v'+this.props.app.state.clientVersion+' provides the following compatibility warning: '+serverWarning+". "
@@ -311,15 +310,13 @@ export class Statusbar extends Component {
       serverTitle += "(close bundle then click here to choose a different server)"
     }
 
-    var clientTitle = clientType+" client v"+this.props.app.state.clientVersion+" with id: "+this.props.app.state.clientid
-    var clientVersionStyle = {margin: "4px", border: "1px dotted #a1a1a1", paddingLeft: "2px", paddingRight: "2px"}
-    var clientWarning = this.props.app.state.clientWarning
+    let clientTitle = clientType+" client v"+this.props.app.state.clientVersion+" with id: "+this.props.app.state.clientid
+    let clientVersionStyle = {margin: "4px", border: "1px dotted #a1a1a1", paddingLeft: "2px", paddingRight: "2px"}
+    let clientWarning = this.props.app.state.clientWarning
     if (clientWarning) {
       clientVersionStyle.color = 'orange'
       clientTitle += '.  The current server provides the following compatibility warning: '+clientWarning
     }
-
-
 
     return (
       <div style={divStyle} className="statusbar">
@@ -351,14 +348,13 @@ export class Statusbar extends Component {
               }
               <span style={{margin: "4px"}}>{this.props.app.state.serverHost}</span>
             </MyLink>
-        :
-        null
-      }
-
-
+          :
+          null
+        }
         <span style={{float: "right", marginRight: "10px"}} title={clientTitle}>
           <span className={this.props.app.state.isElectron ? "fa-md fas fa-fw fa-desktop" : "fa-md fas fa-fw fa-window-maximize"} style={{margin: "4px"}}/>
-          <span style={clientVersionStyle}>{this.props.app.state.clientVersion}</span> {this.props.app.state.clientid}
+          <span style={clientVersionStyle}>{this.props.app.state.clientVersion}</span>
+          <span style={clientVersionStyle}>{this.props.app.state.clientid}</span>
           {this.props.app.state.isElectron ?
             <ClientUpdateButton clientVersion={this.props.app.state.clientVersion} latestClientVersion={this.props.app.state.latestClientVersion} />
             :
@@ -366,8 +362,6 @@ export class Statusbar extends Component {
             // <ClientUpdateButton clientVersion={this.props.app.state.clientVersion} latestClientVersion={this.props.app.state.latestClientVersion} />
           }
         </span>
-
-
       </div>
     )
   }

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import {Routes, Route} from 'react-router-dom'
+import React, {Component} from 'react';
+import {Route, Routes} from 'react-router-dom'
 import './App.css';
 
 import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
@@ -7,13 +7,12 @@ import SocketIO from 'socket.io-client'; // https://www.npmjs.com/package/socket
 // NOTE: currently use a local version until PR is accepted, in which case we can lose the ./ and update the version requirements in package.json
 // local version now also includes a getSearchString() which we'd have to rewrite if using the dependency
 import ReactQueryParams from './react-query-params'; // https://github.com/jeff3dx/react-query-params
-
 import {history} from './history'
-import {MyRouter, isStaticFile, randomstr, generatePath} from './common'
+import {generatePath, isStaticFile, MyRouter, randomstr, withRouter} from './common'
 import RoutedSplashBundle from './splash-bundle';
-import RoutedSplashServer, {withRouter} from './splash-server';
+import RoutedSplashServer from './splash-server';
 // import {SettingsServers, SettingsBundles} from './settings';
-import {Bundle} from './bundle';
+import RoutedBundle from './bundle';
 // import {PSPanel} from './panel-ps';
 import {NotFound} from './errors';
 
@@ -46,7 +45,7 @@ class App extends ReactQueryParams {
       settingsServerHosts: [],
       settingsDismissedTips: [],
       allowDisconnectReadonly: false,
-      clientVersion: '1.0.1', // UPDATE ON NEW RELEASE, also update package.json.version to match
+      clientVersion: '1.1.0', // UPDATE ON NEW RELEASE, also update package.json.version to match
       serverMinVersion: '2.4.0',  // UPDATE ON NEW RELEASE - any warnings need to go in common.getServerWarning
       latestClientVersion: null, // leave at null, updated by getLatestClientVersion
       latestServerVersion: null, // leave at null, updated by getLatestServerVersion
@@ -74,16 +73,17 @@ class App extends ReactQueryParams {
     this.setState({[k]: v});
   }
   getElectronChildProcessPort = () => {
-    this.setState({electronChildProcessPort: window.ElectronAPI.getPyPort()})
+    window.electronAPI.getPyPort().then((value) =>
+      this.setState({electronChildProcessPort: value})
+    )
   }
   redirectFromArgs = (server, bundleid, action, filter) => {
     // alert("redirectFromArgs "+server+" "+bundleid+" "+action+" "+filter)
     if (server !== null) {
       // then we need to do a redirect based on command line arguments
       // NOTE: we can assume a static file in electron at this point
-      const url = window.location.origin + window.location.pathname + "?" + filter + "#" + generatePath(server, bundleid, action, null)
       // alert("redirecting to "+url)
-      window.location.href = url
+      window.location.href = window.location.origin + window.location.pathname + "?" + filter + "#" + generatePath(server, bundleid, action, null)
     }
   }
   componentDidMount() {
@@ -113,10 +113,10 @@ class App extends ReactQueryParams {
 
     if (stateisElectron) {
       // TODO: allow passing json for bundle (and server defaulting to subprocess if not provided)
-      if (!window.require('electron').remote.getGlobal('ignoreArgs')) {
+      if (!window.electronAPI.ignoreArgs()) {
         // this will set ignoreArgs to true so that we don't try processing again (on a reload, redirect, new window, etc)
-        window.require('electron').remote.getGlobal('setIgnoreArgs')(true);
-        const args = window.require('electron').remote.getGlobal('args');
+        window.electronAPI.setIgnoreArgs(true);
+        const args = window.electronAPI.getArgs();
         let server = args['s'] || null;
         let bundleid = args['b'] || null;
         let jfile = args['j'] || null;
@@ -158,7 +158,7 @@ class App extends ReactQueryParams {
       .then(res => res.json())
       .then(json => this.setState({latestServerVersion: json[0]['tag_name'] || null}))
       .catch(err => {
-        console.log("failed to fetch latestServerVersion")
+        console.log("failed to fetch latestServerVersion", err)
         this.setState({latestServerVersion: null})
       })
   }
@@ -173,14 +173,16 @@ class App extends ReactQueryParams {
       })
   }
   getServerPhoebeVersion = (serverHost) => {
-    fetch("https://"+serverHost+"/info", {method: 'POST', body: JSON.stringify({client_version: this.state.clientVersion, clientid: this.state.clientid})})
+    fetch("http://"+serverHost+"/info", {method: 'POST', headers: {"Content-Type": "application/json"},
+                                                    body: JSON.stringify({client_version: this.state.clientVersion,
+                                                                                clientid: this.state.clientid})})
       .then(res => res.json())
       .then(json => {
         this.setState({serverPhoebeVersion: json.data.phoebe_version, serverInfo: json.data.info || '', serverAvailableKinds: json.data.available_kinds, clientWarning: json.data.client_warning || null})
       })
       .catch(err => {
         console.log(err)
-        if (!this.queryParams.disconnectButton && (!this.state.isElectron || !window.require('electron').remote.getGlobal('args').w)) {
+        if (!this.queryParams.disconnectButton && (!this.state.isElectron || !window.electronAPI.getArgs().w)) {
           alert("server may no longer be available.  Cancel connection to rescan.")
         }
         this.setState({serverPhoebeVersion: null, serverInfo: null, serverAvailableKinds: null});
@@ -264,10 +266,10 @@ class App extends ReactQueryParams {
           <Route path={public_url + '/:server/open'} element={<RoutedServer  {...this.props} app={this}><RoutedSplashBundle app={this} openDialog={true}/></RoutedServer>}/>
           <Route path={public_url + '/:server/transfer/:bundleid'} element={<RoutedServer {...this.props} app={this}><RoutedSplashBundle app={this} transfer={true}/></RoutedServer>}/>
           <Route path={public_url + '/:server/:bundleid/servers'} element={<RoutedServer {...this.props} app={this}><RoutedSplashServer {...this.props} app={this} switchServer={true}/></RoutedServer>}/>
-          <Route path={public_url + '/:server/:bundleid/ps'} element={<RoutedServer {...this.props} app={this}><Bundle app={this} PSPanelOnly={true}/></RoutedServer>}/>
-          <Route path={public_url + '/:server/:bundleid/figures'} element={<RoutedServer {...this.props} app={this}><Bundle app={this} FigurePanelOnly={true}/></RoutedServer>}/>
-          <Route path={public_url + '/:server/:bundleid/:action'} element={<RoutedServer {...this.props} app={this}><Bundle app={this}/></RoutedServer>}/>
-          <Route path={public_url + '/:server/:bundleid'} element={<RoutedServer {...this.props} app={this}><Bundle app={this}/></RoutedServer>}/>
+          <Route path={public_url + '/:server/:bundleid/ps'} element={<RoutedServer {...this.props} app={this}><RoutedBundle app={this} PSPanelOnly={true}/></RoutedServer>}/>
+          <Route path={public_url + '/:server/:bundleid/figures'} element={<RoutedServer {...this.props} app={this}><RoutedBundle app={this} FigurePanelOnly={true}/></RoutedServer>}/>
+          <Route path={public_url + '/:server/:bundleid/:action'} element={<RoutedServer {...this.props} app={this}><RoutedBundle app={this}/></RoutedServer>}/>
+          <Route path={public_url + '/:server/:bundleid'} element={<RoutedServer {...this.props} app={this}><RoutedBundle app={this}/></RoutedServer>}/>
           <Route path={public_url + '/:server'} element={<RoutedServer {...this.props} app={this}><RoutedSplashBundle app={this}/></RoutedServer>}/>
           <Route path="*" element={<NotFound/>} />
         </Routes>
@@ -309,13 +311,14 @@ class Server extends Component {
 
     let clientid
     if (isElectron()) {
-      clientid = window.ElectronAPI.getClientId();
+      window.electronAPI.getClientId().then((value) =>
+        this.props.app.setState({clientid: value})
+      )
     } else {
-      clientid = "web-"+randomstr(5);
+      this.props.app.setState({clientid: "web-"+randomstr(5)})
     }
-    this.props.app.setState({clientid: clientid})
-
   }
+
   render() {
     if (this.props.app.state.serverStatus==='connected' || this.props.serverNotRequired || this.props.app.state.allowDisconnectReadonly) {
       return (

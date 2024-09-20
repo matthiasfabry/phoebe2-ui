@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Link, BrowserRouter, HashRouter} from 'react-router-dom';
+import {Link, BrowserRouter, HashRouter, useParams} from 'react-router-dom';
 
 import Select from 'react-select'; // https://react-select.com/home
 import makeAnimated from 'react-select/animated';
@@ -22,6 +22,14 @@ let versionCompare = require('semver-compare');  // function that returns -1, 0,
 // } else {
 //   BrowserWindow = null;
 // }
+
+export function withRouter(Children){
+   return (props)=>{
+
+      const match = {params: useParams()};
+      return <Children {...props}  match={match}/>
+  }
+}
 
 export function isStaticFile() {
   return window.location.pathname.includes('index.html')
