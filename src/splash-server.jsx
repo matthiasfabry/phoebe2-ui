@@ -262,7 +262,7 @@ class ServerButton extends Component {
       // if any of this fails, we'll enter the catch section and ignore this matching
       // if the test succeeds, update the entry in component.state
       // this will then automatically queue a re-render of the underlying component
-      abortableFetch(location+"/info", {method: 'POST', headers: {"Content-Type": "application/json"},
+      abortableFetch(location+"/info", {method: 'POST', headers: {"content-type": "application/json"},
                                                     body: JSON.stringify({client_version: this.props.app.state.clientVersion,
                                                                                                 clientid: this.props.app.state.clientid})})
         .then(res => res.json())
@@ -279,7 +279,7 @@ class ServerButton extends Component {
           //   this.cancelConnect();
           //   history.goBack();
           // }
-          console.log(err)
+          console.error("fetch error: ", err)
           this.setState({phoebeVersion: null, clientMinVersion: null, clientWarning: null, parentId: null});
           this.getInfo(scanTimeout + 500)
         });
@@ -471,7 +471,7 @@ class ServerInstallButton extends Component {
     };
   }
   openInstallLink = (e) => {
-    window.require('electron').shell.openExternal("https://phoebe-project.org/install")
+    window.shell.openExternal("https://phoebe-project.org/install")
     this.setState({openedInstallLink: true})
   }
   restartChildProcess = (e) => {
@@ -480,19 +480,19 @@ class ServerInstallButton extends Component {
     this.props.app.getElectronChildProcessPort();
   }
   render() {
-    let onClick, title, text
-    if (this.state.openedInstallLink || this.props.skipChildServer) {
-      onClick = this.restartChildProcess
-      title = "Launch phoebe-server locally"
-      text = "Launch PHOEBE Server Locally"
-    } else {
-      onClick = this.openInstallLink
-      title = "Install phoebe-server locally or add an external server below"
-      text = "Install PHOEBE Server Locally"
-    }
+    let onClick, title, text, restartonClick, restartTitle, restartText
+    restartonClick = this.restartChildProcess
+    restartTitle = "Launch phoebe-server locally"
+    restartText = "Launch PHOEBE Server Locally"
+    onClick = this.openInstallLink
+    title = "Install phoebe-server locally or add an external server below"
+    text = "Install PHOEBE Server Locally"
 
     return (
       <div className="splash-scrollable-btn-div">
+        <span className="btn btn-transparent" title={restartTitle} onClick={restartonClick}>
+          {restartText}
+        </span>
         <span className="btn btn-transparent" title={title} onClick={onClick}>
           {text}
         </span>

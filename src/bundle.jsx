@@ -230,7 +230,9 @@ class Bundle extends Component {
 
     this.abortGetParamsController = new window.AbortController();
 
-    abortableFetch("http://"+this.props.app.state.serverHost+"/bundle/"+this.state.bundleid, {signal: this.abortGetParamsController.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
+    abortableFetch("http://"+this.props.app.state.serverHost+"/bundle/"+this.state.bundleid, {
+      signal: this.abortGetParamsController.signal, method: 'POST', headers: {"content-type": "application/json"},
+      body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
       .then(res => res.json())
       .then(json => {
         if (json.data.success) {
@@ -253,7 +255,7 @@ class Bundle extends Component {
 
           this.updatePollingJobs(json.data.parameters);
           this.emit('rerun_all_figures', {});
-        } else if (!window.require('electron').remote.getGlobal('args').w) {
+        } else if (!window.electronAPI.getArgs().w) {
           alert("server error: "+json.data.error);
           this.setState({params: null, tags: null, figures: [], failedConstraints: [], checksStatus: "UNKNOWN", checksReport: null, nparams: null});
           this.props.app.clearQueryParams();
@@ -261,9 +263,9 @@ class Bundle extends Component {
           this.setState({redirect: generatePath(this.props.app.state.serverHost)})
           // this.cancelLoadBundleSpinners();
         }
-      }, err=> {
+      }, err => {
         // then we canceled the request
-        console.log("received abort signal")
+        console.log("received abort signal", err)
         // this.cancelLoadBundleSpinners();
       })
       .catch(err => {

@@ -105,9 +105,7 @@ function createWindow() {
       minHeight: 500,
       icon: __dirname + '/icons/phoebe.png',
       webPreferences: {
-          preload: path.join(__dirname, '/../build/preload.js'),
-          contextIsolation: true,
-          nodeIntegration: false
+          preload: path.join(__dirname, '/../build/preload.js')
       }
     });
 
@@ -177,13 +175,14 @@ app.on('ready', () => {
     ipcMain.handle('get-clientid', () => { return global.clientid })
     ipcMain.handle('get-pyport', () => { return global.pyPort })
     ipcMain.handle('get-args', () => { return global.args })
-    ipcMain.handle('launchChildProcessServer', () => { return launchChildProcessServer })
+    ipcMain.handle('launchChildProcessServer', launchChildProcessServer )
     ipcMain.handle('ignoreArgs', () => { return global.ignoreArgs })
-    ipcMain.handle('setIgnoreArgs', () => { return setIgnoreArgs })
-    ipcMain.handle('launchPythonClient', () => { return launchPythonClient })
-    ipcMain.handle('electronPrompt', () => { return electronPrompt })
-    ipcMain.handle('launchCommand', () => { return launchCommand })
-    ipcMain.handle('executeJSwithUserGesture', () => { return executeJSwithUserGesture })
+    ipcMain.handle('setIgnoreArgs', setIgnoreArgs )
+    ipcMain.handle('launchPythonClient',  launchPythonClient )
+    ipcMain.handle('electronPrompt', electronPrompt )
+    ipcMain.handle('launchCommand', launchCommand)
+    ipcMain.handle('testAutofigInstalled', testAutofigInstalled)
+    ipcMain.handle('executeJSwithUserGesture', executeJSwithUserGesture )
 
     createWindow()
 });
@@ -208,12 +207,6 @@ app.on('activate', ()=> {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-// functions that will be available to electron apps only.  These can be accessed
-// from JSX files if app.isElectron via
-// require('electron').remote.getGlobal('launchPythonClient'), for example
-
-// const electronStorage = require('electron-json-storage')
-// global.electronStorage = electronStorage
 
 const launchPythonClient = (terminal_cmd, terminal_execute_args, python_cmd, cmd) => {
   return child_process.spawn(terminal_cmd, terminal_execute_args.concat([python_cmd+' -i -c \"'+cmd+'\"']));
@@ -280,14 +273,13 @@ const testAutofigInstalled = () => {
     return null;
   }
 }
-global.testAutofigInstalled = testAutofigInstalled;
 
 global.pyPort = null;
 const launchChildProcessServer = () => {
     // TODO: can we detect if phoebe-server is already running on this port and if so skip?  If something else is on this port, we should raise an error and exit or choose a new port
     console.log("launching child process server!")
     if (!pyPort) {
-        pyPort = options.argv.p || 5000;
+        pyPort = options.argv.p || 5001;  // Matthias F: port 5000 is somehow used by firefox on my Mac
         pyProc = child_process.spawn('phoebe-server', ['--port', pyPort, '--parent', global.clientid]);
         pyProc.on('error', () => {killChildProcessServer()});
     }

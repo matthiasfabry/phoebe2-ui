@@ -16,13 +16,6 @@ export const abortableFetch = ('signal' in new Request('')) ? window.fetch : fet
 
 let versionCompare = require('semver-compare');  // function that returns -1, 0, 1
 
-// let BrowserWindow;
-// if (isElectron()) {
-//   BrowserWindow = window.require('electron').remote.BrowserWindow
-// } else {
-//   BrowserWindow = null;
-// }
-
 export function withRouter(Children){
    return (props)=>{
 

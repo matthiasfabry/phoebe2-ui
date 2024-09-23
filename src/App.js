@@ -131,7 +131,7 @@ class App extends ReactQueryParams {
         if (jfile !== null) {
 
           let json = window.require('fs').readFileSync(jfile, "utf8")
-          fetch("https://"+server+"/open_bundle/load:phoebe2", {method: 'POST', body: JSON.stringify({json: json, bundleid: bundleid})})
+          fetch("http://"+server+"/open_bundle/load:phoebe2", {method: 'POST', body: JSON.stringify({json: json, bundleid: bundleid})})
             .then(res => res.json())
             .then(json => {
               if (json.data.success) {
@@ -172,7 +172,7 @@ class App extends ReactQueryParams {
         this.setState({latestClientVersion: null})
       })
   }
-  getServerPhoebeVersion = (serverHost) => {
+  getServerPhoebeVersion(serverHost) {
     fetch("http://"+serverHost+"/info", {method: 'POST', headers: {"Content-Type": "application/json"},
                                                     body: JSON.stringify({client_version: this.state.clientVersion,
                                                                                 clientid: this.state.clientid})})
@@ -188,7 +188,7 @@ class App extends ReactQueryParams {
         this.setState({serverPhoebeVersion: null, serverInfo: null, serverAvailableKinds: null});
       });
   }
-  serverConnect = (server) => {
+  serverConnect(server) {
     let serverHost = server || this.props.match.params.server
 
     if (this.queryParams.disconnect) {
@@ -224,7 +224,8 @@ class App extends ReactQueryParams {
       this.serverDisconnect();
     });
   }
-  serverDisconnect = () => {
+
+  serverDisconnect() {
     console.log("App.serverDisconnect");
 
     if (this.socket) {
@@ -237,7 +238,8 @@ class App extends ReactQueryParams {
 
     this.setState({serverStatus: "disconnected", serverHost: null, serverPhoebeVersion: null, clientWarning: null});
   }
-  emit = (channel, packet) => {
+
+  emit(channel, packet) {
     if (this.socket) {
       packet['clientid'] = this.state.clientid;
       packet['client_version'] = this.state.clientVersion;

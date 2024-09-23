@@ -7,4 +7,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     launchChildProcessServer: () => ipcRenderer.invoke('launchChildProcessServer'),
     ignoreArgs: () => ipcRenderer.invoke('ignoreArgs'),
     setIgnoreArgs: () => ipcRenderer.invoke('setIgnoreArgs'),
+    testAutofigInstalled: () => ipcRenderer.invoke('testAutofigInstalled'),
+    launchCommand: () => ipcRenderer.invoke('launchCommand'),
 });
