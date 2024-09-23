@@ -117,7 +117,7 @@ function createWindow() {
             protocol: 'file://',
             slashes: true
         });
-    console.log(startUrl)
+    console.log('Loading main URL:', startUrl)
     mainWindow.loadURL(startUrl);
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
@@ -287,15 +287,14 @@ const launchChildProcessServer = () => {
     // TODO: can we detect if phoebe-server is already running on this port and if so skip?  If something else is on this port, we should raise an error and exit or choose a new port
     console.log("launching child process server!")
     if (!pyPort) {
-    pyPort = options.argv.p || 5000;
-    pyProc = child_process.spawn('phoebe-server', ['--port', pyPort, '--parent', global.clientid]);
-    pyProc.on('error', () => {killChildProcessServer()});
-  }
+        pyPort = options.argv.p || 5000;
+        pyProc = child_process.spawn('phoebe-server', ['--port', pyPort, '--parent', global.clientid]);
+        pyProc.on('error', () => {killChildProcessServer()});
+    }
 
   // allow pyPort to be accessible from within the React app
   global.pyPort = pyPort; // if this is null, then phoebe-server not able to launch
 }
-global.launchChildProcessServer = launchChildProcessServer;
 
 const killChildProcessServer = () => {
   if (pyProc) {

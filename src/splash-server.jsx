@@ -379,7 +379,6 @@ class ServerButton extends Component {
       style = {pointerEvents: "none"}
     }
 
-
     let removeStyle = {pointerEvents: "all"}
     if (this.state.removeConfirmed) {
       btnClassName += " btn-transparent-remove"

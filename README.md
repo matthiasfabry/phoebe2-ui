@@ -124,6 +124,6 @@ To include other installers, see the available list [here](https://github.com/el
 
 * All Router components in [App.js](/src/App.js) should be wrapped in a Server component to handle parsing the URL and making sure the connection is correct.
 
-* All electron-only capability is handled in [electron-starter.js](/src/electron-starter.js) and exposed via `global.`.  These are then available from React components via `window.require('electron').remote.getGlobal()`.
+* All electron-only capability is handled in [electron-starter.js](/src/electron-starter.js) and exposed via [preload.js](/src/preload.js), using the `contextBridge`. These are then available from React components via `window.electronAPI`.
 
 All .jsx files use [Babel](https://babeljs.io/) syntax with [ES6](http://es6-features.org/) support.

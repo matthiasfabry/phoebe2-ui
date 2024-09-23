@@ -129,8 +129,6 @@ export class Toolbar extends Component {
       code += ' logger=phoebe.logger(\''+loglevel+'\');'
     }
     code += ' b=phoebe.Bundle.from_server(\''+this.props.bundleid+'\', \''+this.props.app.state.serverHost+'\');'
-    console.log("python_cmd: "+python_cmd)
-    console.log("code: "+code)
     let terminal_cmd = this.props.app.getSettingFromStorage('terminal_cmd') || 'xterm -e'
     if (this.props.app.state.isElectron) {
       if (terminal_cmd === 'paste') {
@@ -146,6 +144,8 @@ export class Toolbar extends Component {
         if (s!==-1) {
           terminal_args = terminal_cmd.slice(s+1).split(' ')
         }
+        console.log("python_cmd: "+python_cmd)
+        console.log("code: "+code)
         console.log("terminal_cmd "+terminal_cmd.slice(0,s))
         console.log("terminal_args "+terminal_args)
         window.electronAPI.launchPythonClient(terminal_cmd.slice(0, s), terminal_args, python_cmd, code+'print(\\"'+code+'\\")');
@@ -175,16 +175,15 @@ export class Toolbar extends Component {
     let nPollingJobs = Object.keys(this.props.bundle.state.pollingJobs).length;
     // let nPollingJobs = 2
 
-
     return (
       <div style={divStyle} className="toolbar">
         <div style={{float: "left", marginLeft: "0px"}}>
-          {this.props.app.state.isElectron && window.require('electron').remote.getGlobal('args').disableBundleChange ?
+          {this.props.app.state.isElectron && window.electronAPI.getArgs().disableBundleChange ?
             null
             :
             <ToolbarButton iconClassNames="fas fa-file" title="new bundle" onClick={this.newBundle}/>
           }
-          {this.props.app.state.isElectron && window.require('electron').remote.getGlobal('args').disableBundleChange ?
+          {this.props.app.state.isElectron && window.electronAPI.getArgs().disableBundleChange ?
             null
             :
             <ToolbarButton iconClassNames="fas fa-folder-open" title="load/import bundle from file" onClick={this.openBundle}/>
