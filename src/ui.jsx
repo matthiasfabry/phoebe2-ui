@@ -275,7 +275,7 @@ export class Statusbar extends Component {
 
   }
   render() {
-    let divStyle = {position: "absolute", left: 0, bottom: 0, width: "100%", height: "28px", fontWeight: "400", fontSize: "0.93m"}
+    let divStyle = {position: "fixed", bottom: 0, width: "100%", height: "28px", fontWeight: "400", fontSize: "0.93m", zIndex: 99}
     if (!this.props.dark) {
       divStyle.backgroundColor = "#2B71B1"
       // divStyle.borderTop = "2px solid #456583"

@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import {redirect} from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
-import {useSortable} from '@dnd-kit/sortable'; // https://github.com/clauderic/react-sortable-hoc
+import { useSortable } from '@dnd-kit/sortable'; // https://github.com/clauderic/react-sortable-hoc
 import { CSS } from '@dnd-kit/utilities'
-import {MyLink, generatePath, popUpWindow, randomstr} from './common';
-import {Tour} from './tour';
-import {Panel} from './ui';
+import { MyLink, generatePath, popUpWindow, randomstr } from './common';
+import { Tour } from './tour';
+import { Panel } from './ui';
 
 const DragHandle = (props) => {
   const { id } = props;
@@ -163,7 +163,7 @@ export class FigureThumb extends React.Component {
   }
   render() {
     // randomstr at end of URL forces the browser to reload the image instead of relying on cached version
-    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
     return (
       <div className="ReactFigureThumb">
         <img width="100%" src={url} onClick={this.onClick}></img>
@@ -195,7 +195,7 @@ class FigureEditButton extends React.Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<redirect to={this.state.redirect}/>)
+      return (<Navigate to={this.state.redirect}/>)
     }
     return (
       <span style={{width: "24px"}} className="btn btn-tag btn-tag-clear" onClick={this.onClick} title='edit figure parameters'><span className='fas fa-fw fa-pen'></span></span>
@@ -226,7 +226,7 @@ class EditFigureTimeSourceButton extends React.Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<redirect to={this.state.redirect}/>)
+      return (<Navigate to={this.state.redirect}/>)
     }
     return (
       <span style={{maxWidth: "100%"}} className="btn btn-tag btn-tag-clear" onClick={this.onClick}><span className='fas fa-fw fa-clock'></span> edit times</span>
@@ -242,7 +242,7 @@ class FigureMPLButton extends React.Component {
     };
   }
   onClick = () => {
-    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure_afig/'+this.props.figure
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure_afig/'+this.props.figure
 
     console.log("FigureMPLButton.onClick")
     if (this.props.app.state.isElectron) {
@@ -295,7 +295,7 @@ class FigureExpandButton extends React.Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<redirect to={this.state.redirect}/>)
+      return (<Navigate to={this.state.redirect}/>)
     }
     return (
       <span style={{width: "24px"}} className="btn btn-tag btn-tag-clear" onClick={this.onClick} title='view image in middle panel'><span className='fas fa-fw fa-expand'></span></span>
@@ -310,7 +310,7 @@ class FigurePopoutButton extends React.Component {
     };
   }
   onClick = (e) => {
-    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
     let win = popUpWindow(url, window.location.search);
     // TODO: callback to remove from childrenWindows when manually closed?
     this.props.bundle.childrenWindows.push(win);
@@ -332,7 +332,7 @@ class FigureSaveButton extends React.Component {
   onClick = () => {
     // console.log("FigureSaveButton clicked");
     alert("saving figures coming soon");
-    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
     // let win = popUpWindow(url, window.location.search);
   }
   render() {
@@ -363,7 +363,7 @@ export class FigurePanelWidth extends React.Component {
         </div>
       )
     }
-    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
     return (
       <img style={{display: "block", marginLeft: "auto", marginRight: "auto", maxWidth: "600px"}} src={url}></img>
     );
@@ -385,7 +385,7 @@ export class FigureFullScreen extends React.Component {
       return null;
     }
 
-    let url = 'https://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
+    let url = 'http://'+this.props.app.state.serverHost+'/'+this.props.bundle.state.bundleid+'/figure/'+this.props.figure+'?'+this.props.bundle.state.figureUpdateTimes[this.props.figure]
     return (
       <div className="ReactFigureFullScreen" style={this.props.visible ? {} : { display: 'none' }}>
         <h2>{this.props.figure}</h2>

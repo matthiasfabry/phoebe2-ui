@@ -172,7 +172,7 @@ class ServerStatusIcon extends Component {
     }
 
     return (
-      <MyLink style={style} className={classes} title={title} to={to} onClick={onClick} onMouseEnter={()=>{this.setState({hover:true})}} onMouseLeave={()=>{this.setState({hover:false})}}></MyLink>
+      <div style={style} className={classes} title={title} to={to} onClick={onClick} onMouseEnter={()=>{this.setState({hover:true})}} onMouseLeave={()=>{this.setState({hover:false})}}></div>
     )
   }
 }

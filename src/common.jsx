@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
-import {Link, BrowserRouter, HashRouter, useParams} from 'react-router-dom';
+import { Link, BrowserRouter, HashRouter, useParams } from 'react-router-dom';
 
 import Select from 'react-select'; // https://react-select.com/home
 import makeAnimated from 'react-select/animated';
 const animatedComponents = makeAnimated();
 
 import Papa from 'papaparse'; // https://www.npmjs.com/package/papaparse
-
 import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
 
 // use native browser implementation if it supports aborting, otherwise use polyfill and whatwg-fetch
 import 'abortcontroller-polyfill';
-import {fetch} from 'whatwg-fetch';
+import { fetch } from 'whatwg-fetch';
 export const abortableFetch = ('signal' in new Request('')) ? window.fetch : fetch
 
 let versionCompare = require('semver-compare');  // function that returns -1, 0, 1

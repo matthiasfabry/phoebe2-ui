@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import {MyLink, generatePath} from './common';
 
 
@@ -41,7 +40,6 @@ class Tip extends Component {
       return (
         <MyLink className='phoebe-tip' to={this.props.to}>
           <span className="fa-fw fas fa-times" style={{float: "right", cursor: "pointer"}} title="don't show again" onClick={this.dismiss}/>
-
           {this.props.children}
         </MyLink>
       )
@@ -159,7 +157,7 @@ class TipAddDataset extends Component {
   render() {
     return(
       <Tip title="AddDataset" to={generatePath(this.props.app.state.serverHost, this.props.bundleid, "add_dataset")} onDismiss={this.props.onDismiss} alreadyDismissed={this.props.alreadyDismissed} isVisibleStart={this.isVisibleStart} isVisibleEnd={this.isVisibleEnd}>
-         There are no datasets attached.  Click here or the <span className="fa-fw fas fa-plus"></span> icon on the left in the "Dataset" section to add a dataset to your system.
+         There are no datasets attached. Click here or the <span className="fa-fw fas fa-plus"></span> icon on the left in the "Dataset" section to add a dataset to your system.
       </Tip>
     )
   }
@@ -259,7 +257,7 @@ export class Tour extends Component {
   clearSettingsDismissed = () => {
     console.log("Tour.clearSettingsDismissed")
     this.setState({alreadyDismissed: []})
-    this.props.app.updateSetting('settingsDismissedTips', "")
+    this.props.app.updateSetting('settingsDismissedTips', [])
   }
   componentDidMount() {
     let settingsDismissedTips = this.props.app.state.settingsDismissedTips

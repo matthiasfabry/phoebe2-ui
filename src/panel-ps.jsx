@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
-import {redirect} from 'react-router-dom';
-
+import { Navigate } from 'react-router-dom';
 import FlipMove from 'react-flip-move'; // https://github.com/joshwcomeau/react-flip-move
 import Select from 'react-select'; // https://react-select.com/home
 import CreatableSelect from 'react-select/creatable'; // https://react-select.com/creatable
 import makeAnimated from 'react-select/animated';
 const animatedComponents = makeAnimated();
 
-import {Link, Twig, generatePath, abortableFetch, mapObject, filterObjectByKeys, popUpWindow} from './common';
-import {LogoSpinner} from './logo';
-import {Panel} from './ui';
-import {Tag} from './panel-tags';
+import { Twig, generatePath, abortableFetch, mapObject, filterObjectByKeys, popUpWindow } from './common';
+import { LogoSpinner } from './logo';
+import { Panel } from './ui';
+import { Tag } from './panel-tags';
 
 // import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
 
@@ -247,7 +246,7 @@ class Parameter extends Component {
   // }
   render() {
     if (this.state.redirect) {
-      return (<redirect to={this.state.redirect}/>)
+      return (<Navigate to={this.state.redirect}/>)
     }
 
     if (['SelectParameter', 'SelectTwigParameter', 'FloatArrayParameter', 'DistributionParameter', 'ConstraintParameter'].indexOf(this.props.paramOverview.class)!==-1 && !this.state.expandedValue && !this.state.expandedUnit &&!this.state.expandedDetails && this.state.receivedDetails) {
@@ -259,7 +258,9 @@ class Parameter extends Component {
       this.setState({receivedDetails: true})
 
       this.abortGetDetailsController = new window.AbortController();
-      abortableFetch("https://"+this.props.app.state.serverHost+"/parameter/"+this.props.bundle.state.bundleid+"/"+this.props.uniqueid, {signal: this.abortGetDetailsController.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
+      abortableFetch("http://"+this.props.app.state.serverHost+"/parameter/"+this.props.bundle.state.bundleid+"/"+this.props.uniqueid, {
+        signal: this.abortGetDetailsController.signal, method: 'POST', headers: {'content-type': 'application/json'},
+        body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
         .then(res => res.json())
         .then(json => {
           if (json.data.success) {
@@ -594,11 +595,11 @@ class ParameterDetailsItemPin extends Component {
       let dist_param = this.props.bundle.state.params[this.props.uniqueid];
 
       let distribution = dist_param.distribution
-      let urls = ["https://"+this.props.app.state.serverHost+"/"+this.props.bundle.state.bundleid+"/distribution_plot/"+this.props.param.props.uniqueid+"/"+distribution]
+      let urls = ["http://"+this.props.app.state.serverHost+"/"+this.props.bundle.state.bundleid+"/distribution_plot/"+this.props.param.props.uniqueid+"/"+distribution]
       this.setState({peakDistributionImgs: urls})
 
       this.abortGetDetailsController = new window.AbortController();
-      abortableFetch("https://"+this.props.app.state.serverHost+"/parameter/"+this.props.bundle.state.bundleid+"/"+this.props.uniqueid, {signal: this.abortGetDetailsController.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
+      abortableFetch("http://"+this.props.app.state.serverHost+"/parameter/"+this.props.bundle.state.bundleid+"/"+this.props.uniqueid, {signal: this.abortGetDetailsController.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
         .then(res => res.json())
         .then(json => {
           if (json.data.success) {
@@ -608,7 +609,7 @@ class ParameterDetailsItemPin extends Component {
             let dist_param_referenced_uniqueid = Object.keys(json.data.parameter.referenced_parameter)[0]
             console.log(dist_param_referenced_uniqueid)
             if (dist_param_referenced_uniqueid !== this.props.param.props.uniqueid) {
-              urls.unshift("https://"+this.props.app.state.serverHost+"/"+this.props.bundle.state.bundleid+"/distribution_plot/"+dist_param_referenced_uniqueid+"/"+distribution)
+              urls.unshift("http://"+this.props.app.state.serverHost+"/"+this.props.bundle.state.bundleid+"/distribution_plot/"+dist_param_referenced_uniqueid+"/"+distribution)
               this.setState({peakDistributionImgs: urls})
             }
 
@@ -806,7 +807,7 @@ class InputFloatArray extends Component {
     this.abortGetArgsForType = new window.AbortController();
 
     console.log("requesting conversion of nparray: "+JSON.stringify(value))
-    abortableFetch("https://"+this.props.app.state.serverHost+"/nparray/"+JSON.stringify(value), {signal: this.abortGetArgsForType.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
+    abortableFetch("http://"+this.props.app.state.serverHost+"/nparray/"+JSON.stringify(value), {signal: this.abortGetArgsForType.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
       .then(res => res.json())
       .then(json => {
         console.log(json)
@@ -889,7 +890,7 @@ class InputFloatArray extends Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<redirect to={this.state.redirect}/>)
+      return (<Navigate to={this.state.redirect}/>)
     }
 
     let btnStyle = {width: "calc(25% - 4px)", margin: "2px", textAlign: "center", lineHeight: "1em"}
@@ -1027,7 +1028,7 @@ class InputDistribution extends Component {
     this.abortGetArgsForType = new window.AbortController();
 
     console.log("requesting conversion of distl object: "+JSON.stringify(value)+ " current face value: "+this.state.current_face_value)
-    abortableFetch("https://"+this.props.app.state.serverHost+"/distl/"+JSON.stringify(value)+"/"+this.state.current_face_value, {signal: this.abortGetArgsForType.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
+    abortableFetch("http://"+this.props.app.state.serverHost+"/distl/"+JSON.stringify(value)+"/"+this.state.current_face_value, {signal: this.abortGetArgsForType.signal, method: 'POST', body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
       .then(res => res.json())
       .then(json => {
         // console.log(json)

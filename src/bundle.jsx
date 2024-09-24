@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,19 +7,19 @@ import 'react-toastify/dist/ReactToastify.css';
 // import 'react-toastify/dist/ReactToastify.min.css';
 
 // import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
-import {PanelGroup} from 'rsuite'; // https://www.npmjs.com/package/react-panelgroup
-import {arrayMove} from '@dnd-kit/sortable';
+import { PanelGroup } from 'rsuite'; // https://www.npmjs.com/package/react-panelgroup
+import { arrayMove } from '@dnd-kit/sortable';
 
 // will need to move to array-move if updating react-sortable-hoc, but
 // currently causes npm run build to fail
 // const arrayMove = require('array-move'); // https://www.npmjs.com/package/array-move
 
-import {TagPanel} from './panel-tags';
-import {PSPanel} from './panel-ps';
-import {ActionPanel} from './panel-action';
-import {FigurePanel} from './panel-figures';
-import {generatePath, abortableFetch, mapObject, sameLists, withRouter} from './common';
-import {Toolbar, Statusbar} from './ui';
+import { TagPanel } from './panel-tags';
+import { PSPanel } from './panel-ps';
+import { ActionPanel } from './panel-action';
+import { FigurePanel } from './panel-figures';
+import { generatePath, abortableFetch, mapObject, sameLists, withRouter } from './common';
+import { Toolbar, Statusbar } from './ui';
 
 
 class Bundle extends Component {
@@ -516,7 +516,7 @@ class Bundle extends Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<redirect to={this.state.redirect}/>)
+      return (<Navigate to={this.state.redirect}/>)
     }
 
     if (this.props.PSPanelOnly) {

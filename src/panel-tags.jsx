@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import {redirect} from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
-// import ReactQueryParams from 'react-query-params'; // https://github.com/jeff3dx/react-query-params
-
-import {generatePath} from './common';
-import {Panel} from './ui';
+import { generatePath } from './common';
+import { Panel } from './ui';
 
 class TagHeaderButton extends Component {
   constructor(props) {
@@ -13,19 +11,22 @@ class TagHeaderButton extends Component {
       redirect: null
     }
   }
+
   componentDidUpdate() {
     if (this.state.redirect) {
       this.setState({redirect: null})
     }
   }
+
   followLink = (e) => {
     e.preventDefault();
     e.stopPropagation();
     this.setState({redirect: generatePath(this.props.app.state.serverHost, this.props.bundleid, this.props.to, this.props.app.getSearchString())});
   }
+
   render() {
     if (this.state.redirect) {
-      return (<redirect to={this.state.redirect}/>)
+      return (<Navigate to={this.state.redirect}/>)
     }
     return (
       <a title={this.props.to} onClick={this.followLink} style={{width: "8px", padding: "2px", marginLeft: "8px"}}>
@@ -42,6 +43,7 @@ class TagClearFilterButton extends Component{
       hover: false
     }
   }
+
   onClear = () => {
     if (this.props.group) {
       this.props.app.setQueryParams({[this.props.group]: []})
@@ -54,6 +56,7 @@ class TagClearFilterButton extends Component{
       })
     }
   }
+
   render() {
     let showButton = false;
     if (this.props.group) {
@@ -102,11 +105,13 @@ class TagOnlyPinnedButton extends Component {
       selected: false,
     }
   }
+
   addToFilter = () => {
     let currentAdvanced = this.props.app.queryParams.advanced || []
     let newAdvanced = currentAdvanced.concat("onlyPinned")
     this.props.app.setQueryParams({advanced: newAdvanced})
   }
+
   removeFromFilter = () => {
     let newAdvanced;
     let currentAdvanced = this.props.app.queryParams.advanced || []
@@ -117,6 +122,7 @@ class TagOnlyPinnedButton extends Component {
     }
     this.props.app.setQueryParams({advanced: newAdvanced})
   }
+
   onClick = () => {
     if (this.state.selected) {
       this.setState({selected: false})
@@ -126,9 +132,11 @@ class TagOnlyPinnedButton extends Component {
       this.addToFilter()
     }
   }
+
   componentDidMount() {
     this.componentDidUpdate();
   }
+
   componentDidUpdate() {
     let advanced = this.props.app.queryParams.advanced || []
     let selected = advanced.indexOf("onlyPinned")!==-1
@@ -136,21 +144,19 @@ class TagOnlyPinnedButton extends Component {
       this.setState({selected: selected})
     }
   }
+
   render() {
     let title
     if (this.state.selected) {
       title = "include non-pinned parameters"
-
     } else {
       title = "show only pinned parameters"
-
     }
 
     return (
       <div style={{width: "100%", padding: "2px", textAlign: "center"}}>
         <span style={{width: "50%", maxWidth: "300px", minWidth: "100px"}} className="btn btn-tag btn-tag-clear" onClick={this.onClick}>{title}</span>
       </div>
-
     )
   }
 }
@@ -165,10 +171,12 @@ export class Tag extends Component {
       isAvailable: true,
     }
   }
+
   addToFilter = () => {
     let newGroupFilter = this.state.currentGroupFilter.concat(this.props.tag)
     this.props.app.setQueryParams({[this.props.group]: newGroupFilter})
   }
+
   removeFromFilter = () => {
     let newGroupFilter;
     if (this.state.currentGroupFilter.length===1) {
@@ -178,6 +186,7 @@ export class Tag extends Component {
     }
     this.props.app.setQueryParams({[this.props.group]: newGroupFilter})
   }
+
   onClick = () => {
     if (this.state.selected) {
       this.setState({selected: false})
@@ -187,14 +196,15 @@ export class Tag extends Component {
       this.addToFilter()
     }
   }
+
   isAvailable = () => {
     if (!this.props.bundle.state.tagsAvailable || !this.props.bundle.state.tagsAvailable[this.props.group+'s']) {
       return true
     }
     return this.props.bundle.state.tagsAvailable[this.props.group+'s'].indexOf(this.props.tag) !== -1
   }
-  componentDidUpdate() {
 
+  componentDidUpdate() {
     if (this.props.currentGroupFilter) {
       if (this.props.currentGroupFilter !== this.state.currentGroupFilter) {
         this.setState({currentGroupFilter: this.props.currentGroupFilter})
@@ -206,24 +216,23 @@ export class Tag extends Component {
       }
     }
 
-
     if (this.state.currentGroupFilter) {
       let selected = this.state.currentGroupFilter.indexOf(this.props.tag)!==-1
       if (selected !== this.state.selected) {
         this.setState({selected: selected})
       }
-
       let isAvailable = this.isAvailable();
 
       if (isAvailable !== this.state.isAvailable) {
         this.setState({isAvailable: isAvailable})
       }
     }
-
   }
+
   componentDidMount() {
     this.componentDidUpdate()
   }
+
   render() {
     let className = "btn btn-tag"
     let iconClassName = "fas fa-fw"
@@ -242,8 +251,6 @@ export class Tag extends Component {
       className += " btn-tag-unavailable"
     }
 
-
-
     let iconStyle = {}
     if (!this.state.hover) {
       iconStyle.color = 'transparent'
@@ -252,7 +259,6 @@ export class Tag extends Component {
     if (this.props.includeGroup) {
       style.maxWidth = "200px"
     }
-
 
     return (
       <span className={className} style={style} title={title} onClick={this.onClick} onMouseEnter={()=>this.setState({hover:true})} onMouseLeave={()=>this.setState({hover:false})}><span style={iconStyle} className={iconClassName}/>
@@ -278,22 +284,26 @@ class TagGroup extends Component {
       // redirect: null,
     };
   }
+
   toggleExpanded = () => {
     this.setState({expanded: !this.state.expanded})
   }
+
   componentDidMount() {
     this.setState({expanded: this.props.expanded})
     this.componentDidUpdate();
   }
+
   componentDidUpdate() {
     let currentGroupFilter = this.props.app.queryParams[this.props.title.toLowerCase()] || []
     if (currentGroupFilter.length !== this.state.currentGroupFilter.length) {
       this.setState({currentGroupFilter: currentGroupFilter})
     }
   }
+
   render() {
     // if (this.state.redirect) {
-    //   return (<redirect to={this.state.redirect}/>)
+    //   return (<Navigate to={this.state.redirect}/>)
     // }
 
     let group = this.props.title.toLowerCase()

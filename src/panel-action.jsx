@@ -1,27 +1,24 @@
 import React, { Component } from 'react';
-import {redirect} from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import cloneDeep from 'lodash/cloneDeep';
 
 
-import {toast} from 'react-toastify';
-import {ToggleButton} from '@asphalt-react/toggle-button';
-import Select from 'react-select'; // https://react-select.com/home
-import CreatableSelect from 'react-select/creatable'; // https://react-select.com/creatable
+import { toast } from 'react-toastify';
+import { ToggleButton } from '@asphalt-react/toggle-button';
+import Select from 'react-select'; // http://react-select.com/home
+import CreatableSelect from 'react-select/creatable'; // http://react-select.com/creatable
 import makeAnimated from 'react-select/animated';
 const animatedComponents = makeAnimated();
 
-import {FigurePanelWidth} from './panel-figures';
-import {PSPanel} from './panel-ps';
-import {LogoSpinner} from './logo';
+import { FigurePanelWidth } from './panel-figures';
+import { PSPanel } from './panel-ps';
+import { LogoSpinner } from './logo';
 
-// import FlipMove from 'react-flip-move'; // https://github.com/joshwcomeau/react-flip-move
+// import FlipMove from 'react-flip-move'; // http://github.com/joshwcomeau/react-flip-move
 
-import {MyLink, Twig, generatePath, abortableFetch, mapObject, filterObjectByKeys, popUpWindow, FileReader} from './common';
-// import {LogoSpinner} from './logo';
+import {MyLink, generatePath, abortableFetch, mapObject, FileReader} from './common';
 import {Panel} from './ui';
-import {Tag} from './panel-tags';
 
-// import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
 
 class ActionContentNewParameters extends Component {
   render() {
@@ -67,9 +64,9 @@ class ActionContentImport extends Component {
 
     let labelChoices = [];
     if (addType === 'model') {
-      let labelChoices = this.props.bundle.state.tags.models || [];
+      labelChoices = this.props.bundle.state.tags.models || [];
     } else if (addType === 'solution') {
-      let labelChoices = this.props.bundle.state.tags.solutions || [];
+      labelChoices = this.props.bundle.state.tags.solutions || [];
     }
     let labelChoicesList = labelChoices.map((choice) => ({value: choice, label: choice +' (overwrite)'}))
 
@@ -415,7 +412,7 @@ class ActionContentRun extends Component {
     console.log("requesting update to checksReport run_checks_"+context+"("+label+")")
 
     this.abortGetChecksReportController = new window.AbortController();
-    abortableFetch("https://"+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
+    abortableFetch("http://"+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
       .then(res => res.json())
       .then(json => {
         if (json.data.success) {
@@ -493,7 +490,7 @@ class ActionContentRun extends Component {
 
     let labelNewValue = {value: this.state.labelNew, label: this.state.labelNew}
     // if (labelNewChoices.indexOf(this.state.labelNew) !== -1) {
-      // TODO: don't incdlue (overwrite) if latest and doesn't yet exist
+      // TODO: don't include (overwrite) if latest and doesn't yet exist
       // labelNewValue.label = this.state.labelNew + ' (overwrite)'
     // }
 
@@ -560,7 +557,7 @@ class ActionContentAdopt extends Component {
     console.log("requesting update to checksReport run_checks_"+context+"("+label+")")
 
     this.abortGetChecksReportController = new window.AbortController();
-    abortableFetch("https://"+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
+    abortableFetch("http://"+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
       .then(res => res.json())
       .then(json => {
         if (json.data.success) {
@@ -923,7 +920,7 @@ export class ActionPanel extends Component {
   }
   render() {
     if (this.state.redirect) {
-      return (<redirect to={this.state.redirect}/>)
+      return (<Navigate to={this.state.redirect}/>)
     }
 
     let action = this.props.action.split("_")[0];
@@ -1044,7 +1041,7 @@ export class ActionPanel extends Component {
     } else if (this.props.action === 'export_data') {
       buttons = <div style={{float: "right"}}>
                   <span onClick={this.closePanel} className="btn btn-primary" style={{margin: "5px"}} title={"cancel "+this.props.action+" and return to filtered parameters"}><span className="fas fa-fw fa-times"></span> cancel</span>
-                  <MyLink onClick={this.closePanel} href={"https://"+this.props.app.state.serverHost+'/export_arrays/'+this.props.bundle.state.bundleid+'/'+this.state.packet.uniqueids} download={this.props.bundle.state.bundleid+"_export_arrays.csv"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download file containing exported arrays"><span className="fas fa-fw fa-download"></span> export arrays</MyLink>
+                  <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_arrays/'+this.props.bundle.state.bundleid+'/'+this.state.packet.uniqueids} download={this.props.bundle.state.bundleid+"_export_arrays.csv"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download file containing exported arrays"><span className="fas fa-fw fa-download"></span> export arrays</MyLink>
               </div>
     } else if (['edit_figure', 'edit_figure_times', 'jobs'].indexOf(this.props.action) !== -1) {
       buttons = <div style={{float: "right"}}>
@@ -1083,11 +1080,11 @@ export class ActionPanel extends Component {
         buttons = <div style={{float: "right"}}>
                     <span onClick={this.closePanel} className="btn btn-primary" style={{margin: "5px"}} title={"cancel "+this.props.action+" and return to filtered parameters"}><span className="fas fa-fw fa-times"></span> cancel</span>
                     { this.props.action === 'run_compute' ?
-                      <MyLink onClick={this.closePanel} href={"https://"+this.props.app.state.serverHost+'/export_compute/'+this.props.bundle.state.bundleid+'/'+this.state.packet.compute+'/'+this.state.packet.model} download={this.props.bundle.state.bundleid+"_run_compute_"+this.state.packet.compute+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_model' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
+                      <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_compute/'+this.props.bundle.state.bundleid+'/'+this.state.packet.compute+'/'+this.state.packet.model} download={this.props.bundle.state.bundleid+"_run_compute_"+this.state.packet.compute+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_model' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
                       : null
                     }
                     { this.props.action === 'run_solver' ?
-                      <MyLink onClick={this.closePanel} href={"https://"+this.props.app.state.serverHost+'/export_solver/'+this.props.bundle.state.bundleid+'/'+this.state.packet.solver+'/'+this.state.packet.solution} download={this.props.bundle.state.bundleid+"_run_solver_"+this.state.packet.solver+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_solution' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
+                      <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_solver/'+this.props.bundle.state.bundleid+'/'+this.state.packet.solver+'/'+this.state.packet.solution} download={this.props.bundle.state.bundleid+"_run_solver_"+this.state.packet.solver+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_solution' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
                       : null
                     }
                     <span onClick={this.submitAction} className="btn btn-primary" style={actionStyle} title={this.props.action}><span className={actionIcon}></span> {this.props.action}</span>
@@ -1107,8 +1104,6 @@ export class ActionPanel extends Component {
         </div>
 
         {buttons}
-
-
       </Panel>
     )
   }
