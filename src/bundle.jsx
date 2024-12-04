@@ -552,7 +552,7 @@ class Bundle extends Component {
 
         <div className="d-none d-lg-block" style={{paddingTop: "50px", paddingBottom: "28px", height: "100%"}}>
           {/* need to support down to width of 990 for d-lg.  Tag starts at width needed for 3 columns */}
-          <PanelGroup panelWidths={panelWidths}>
+          <PanelGroup panelwidths={panelWidths}>
             <TagPanel app={this.props.app} bundleid={this.state.bundleid} bundle={this} inactive={this.props.match.params.action}/>
             {this.props.match.params.action ?
               <ActionPanel app={this.props.app} bundleid={this.state.bundleid} bundle={this} action={this.props.match.params.action}/>
