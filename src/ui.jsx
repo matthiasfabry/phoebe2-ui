@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {redirect} from 'react-router-dom';
 
-import {MyLink, randomstr, generatePath, getServerWarning} from './common';
+import {MyLink, randomstr, generatePath, getServerWarning, protocol} from './common';
 
 let versionCompare = require('semver-compare');  // function that returns -1, 0, 1
 
@@ -188,8 +188,8 @@ export class Toolbar extends Component {
             :
             <ToolbarButton iconClassNames="fas fa-folder-open" title="load/import bundle from file" onClick={this.openBundle}/>
           }
-          <ToolbarButton iconClassNames="fas fa-save" title="save bundle" to={"http://" + this.props.app.state.serverHost + "/save_bundle/" + this.props.bundleid+"?"+randomstr(6)} download={this.props.bundleid+".bundle"} target={this.props.app.state.isElectron ? null : "_blank"}/>
-          <ToolbarButton iconClassNames="fas fa-fw fa-file-download" title="EXPERIMENTAL: export logged history as python script" to={"http://" + this.props.app.state.serverHost + "/export_script/" + this.props.bundleid+"?"+randomstr(6)} download={this.props.bundleid+".py"} target={this.props.app.state.isElectron ? null : "_blank"}/>
+          <ToolbarButton iconClassNames="fas fa-save" title="save bundle" to={protocol + this.props.app.state.serverHost + "/save_bundle/" + this.props.bundleid+"?"+randomstr(6)} download={this.props.bundleid+".bundle"} target={this.props.app.state.isElectron ? null : "_blank"}/>
+          <ToolbarButton iconClassNames="fas fa-fw fa-file-download" title="EXPERIMENTAL: export logged history as python script" to={protocol + this.props.app.state.serverHost + "/export_script/" + this.props.bundleid+"?"+randomstr(6)} download={this.props.bundleid+".py"} target={this.props.app.state.isElectron ? null : "_blank"}/>
           { this.props.bundle.state.undoDescription ?
             <ToolbarButton iconClassNames="fas fa-undo" title={this.props.bundle.state.undoDescription} onClick={this.undo}/>
             :

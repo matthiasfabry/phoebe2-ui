@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Navigate } from 'react-router-dom';
 import cloneDeep from 'lodash/cloneDeep';
-
-
 import { toast } from 'react-toastify';
 import { ToggleButton } from '@asphalt-react/toggle-button';
 import Select from 'react-select'; // http://react-select.com/home
@@ -13,12 +11,10 @@ const animatedComponents = makeAnimated();
 import { FigurePanelWidth } from './panel-figures';
 import { PSPanel } from './panel-ps';
 import { LogoSpinner } from './logo';
-
-// import FlipMove from 'react-flip-move'; // http://github.com/joshwcomeau/react-flip-move
-
-import {MyLink, generatePath, abortableFetch, mapObject, FileReader} from './common';
+import {MyLink, generatePath, abortableFetch, mapObject, FileReader, protocol} from './common';
 import {Panel} from './ui';
 
+// import FlipMove from 'react-flip-move'; // http://github.com/joshwcomeau/react-flip-move
 
 class ActionContentNewParameters extends Component {
   render() {
@@ -412,7 +408,7 @@ class ActionContentRun extends Component {
     console.log("requesting update to checksReport run_checks_"+context+"("+label+")")
 
     this.abortGetChecksReportController = new window.AbortController();
-    abortableFetch("http://"+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
+    abortableFetch(protocol+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
       .then(res => res.json())
       .then(json => {
         if (json.data.success) {
@@ -557,7 +553,7 @@ class ActionContentAdopt extends Component {
     console.log("requesting update to checksReport run_checks_"+context+"("+label+")")
 
     this.abortGetChecksReportController = new window.AbortController();
-    abortableFetch("http://"+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
+    abortableFetch(protocol+this.props.app.state.serverHost+"/run_checks/"+this.props.bundle.state.bundleid+"/"+"run_checks_"+context+"/"+label, {signal: this.abortGetChecksReportController.signal})
       .then(res => res.json())
       .then(json => {
         if (json.data.success) {
@@ -1041,7 +1037,7 @@ export class ActionPanel extends Component {
     } else if (this.props.action === 'export_data') {
       buttons = <div style={{float: "right"}}>
                   <span onClick={this.closePanel} className="btn btn-primary" style={{margin: "5px"}} title={"cancel "+this.props.action+" and return to filtered parameters"}><span className="fas fa-fw fa-times"></span> cancel</span>
-                  <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_arrays/'+this.props.bundle.state.bundleid+'/'+this.state.packet.uniqueids} download={this.props.bundle.state.bundleid+"_export_arrays.csv"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download file containing exported arrays"><span className="fas fa-fw fa-download"></span> export arrays</MyLink>
+                  <MyLink onClick={this.closePanel} href={protocol+this.props.app.state.serverHost+'/export_arrays/'+this.props.bundle.state.bundleid+'/'+this.state.packet.uniqueids} download={this.props.bundle.state.bundleid+"_export_arrays.csv"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download file containing exported arrays"><span className="fas fa-fw fa-download"></span> export arrays</MyLink>
               </div>
     } else if (['edit_figure', 'edit_figure_times', 'jobs'].indexOf(this.props.action) !== -1) {
       buttons = <div style={{float: "right"}}>
@@ -1080,11 +1076,11 @@ export class ActionPanel extends Component {
         buttons = <div style={{float: "right"}}>
                     <span onClick={this.closePanel} className="btn btn-primary" style={{margin: "5px"}} title={"cancel "+this.props.action+" and return to filtered parameters"}><span className="fas fa-fw fa-times"></span> cancel</span>
                     { this.props.action === 'run_compute' ?
-                      <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_compute/'+this.props.bundle.state.bundleid+'/'+this.state.packet.compute+'/'+this.state.packet.model} download={this.props.bundle.state.bundleid+"_run_compute_"+this.state.packet.compute+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_model' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
+                      <MyLink onClick={this.closePanel} href={protocol+this.props.app.state.serverHost+'/export_compute/'+this.props.bundle.state.bundleid+'/'+this.state.packet.compute+'/'+this.state.packet.model} download={this.props.bundle.state.bundleid+"_run_compute_"+this.state.packet.compute+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_model' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
                       : null
                     }
                     { this.props.action === 'run_solver' ?
-                      <MyLink onClick={this.closePanel} href={"http://"+this.props.app.state.serverHost+'/export_solver/'+this.props.bundle.state.bundleid+'/'+this.state.packet.solver+'/'+this.state.packet.solution} download={this.props.bundle.state.bundleid+"_run_solver_"+this.state.packet.solver+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_solution' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
+                      <MyLink onClick={this.closePanel} href={protocol+this.props.app.state.serverHost+'/export_solver/'+this.props.bundle.state.bundleid+'/'+this.state.packet.solver+'/'+this.state.packet.solution} download={this.props.bundle.state.bundleid+"_run_solver_"+this.state.packet.solver+".py"} target={this.props.app.state.isElectron ? null : "_blank"} className="btn btn-primary" style={{actionStyle}} title="Download script to run on an external machine.  Once executed, use 'import_solution' to import the results."><span className="fas fa-fw fa-download"></span> download script</MyLink>
                       : null
                     }
                     <span onClick={this.submitAction} className="btn btn-primary" style={actionStyle} title={this.props.action}><span className={actionIcon}></span> {this.props.action}</span>

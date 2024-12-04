@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import {MyLink, generatePath, abortableFetch, getServerWarning, withRouter} from './common';
+import {MyLink, generatePath, abortableFetch, getServerWarning, withRouter, protocol} from './common';
 
-// import {history} from './history';
 import {LogoSplash} from './logo';
 import {Statusbar} from './ui';
 
@@ -35,7 +34,7 @@ class SplashServer extends Component {
   componentDidMount() {
     if (this.props.match.params.bundleid && this.props.app.state.serverStatus==='connected') {
       // then we're trying to switch servers, so we need to download the current bundle before switching
-      let saveURL = "http://" + this.props.app.state.serverHost + "/save_bundle/" + this.props.match.params.bundleid
+      let saveURL = protocol + this.props.app.state.serverHost + "/save_bundle/" + this.props.match.params.bundleid
       console.log("saving bundle from "+saveURL)
 
       this.abortSaveTransferController = new window.AbortController();
@@ -242,8 +241,8 @@ class ServerButton extends Component {
   }
   getInfo = (scanTimeout, cancelConnectIfFail) => {
     let location = this.props.location;
-    if (!location.startsWith("http://")) {
-      location = "http://" + location
+    if (!location.startsWith(protocol)) {
+      location = protocol + location
     }
 
     scanTimeout = scanTimeout || 0;

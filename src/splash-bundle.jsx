@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import {Statusbar} from './ui';
-import {CancelSpinnerIcon, generatePath, abortableFetch, withRouter} from './common';
+import {CancelSpinnerIcon, generatePath, abortableFetch, withRouter, protocol} from './common';
 
 import {LogoSplash} from './logo';
 
@@ -126,7 +126,7 @@ class NewBundleButton extends Component {
         doFetch = false
       } else {
         // then coming from the onChange of the input
-        fetchURL = "http://"+this.props.app.state.serverHost+"/open_bundle/"+this.props.type
+        fetchURL = protocol+this.props.app.state.serverHost+"/open_bundle/"+this.props.type
 
         let data = new FormData()
         data.append('file', this.fileInput.current.files[0])
@@ -135,11 +135,11 @@ class NewBundleButton extends Component {
         fetchBody = data
       }
     } else if (this.props.type === 'transfer') {
-      fetchURL = "http://"+this.props.match.params.server+"/open_bundle"
+      fetchURL = protocol+this.props.match.params.server+"/open_bundle"
       let data = {json: this.props.app.state.bundleTransferJson, bundleid: this.props.match.params.bundleid, clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion}
       fetchBody = JSON.stringify(data)
     } else {
-      fetchURL = "http://"+this.props.app.state.serverHost+"/new_bundle/"+this.props.type
+      fetchURL = protocol+this.props.app.state.serverHost+"/new_bundle/"+this.props.type
       fetchBody = JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})
     }
 

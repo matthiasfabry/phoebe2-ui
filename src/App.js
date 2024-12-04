@@ -15,6 +15,8 @@ import RoutedSplashServer from './splash-server';
 import RoutedBundle from './bundle';
 // import {PSPanel} from './panel-ps';
 import {NotFound} from './errors';
+import {protocol} from "./common";
+
 
 const socketOptions = {
       reconnection: true,
@@ -131,7 +133,7 @@ class App extends ReactQueryParams {
         if (jfile !== null) {
 
           let json = window.require('fs').readFileSync(jfile, "utf8")
-          fetch("http://"+server+"/open_bundle/load:phoebe2", {method: 'POST', body: JSON.stringify({json: json, bundleid: bundleid})})
+          fetch(protocol+server+"/open_bundle/load:phoebe2", {method: 'POST', body: JSON.stringify({json: json, bundleid: bundleid})})
             .then(res => res.json())
             .then(json => {
               if (json.data.success) {
@@ -173,7 +175,7 @@ class App extends ReactQueryParams {
       })
   }
   getServerPhoebeVersion(serverHost) {
-    fetch("http://"+serverHost+"/info", {method: 'POST', headers: {"Content-Type": "application/json"},
+    fetch(protocol+serverHost+"/info", {method: 'POST', headers: {"Content-Type": "application/json"},
                                                     body: JSON.stringify({client_version: this.state.clientVersion,
                                                                                 clientid: this.state.clientid})})
       .then(res => res.json())
@@ -207,7 +209,7 @@ class App extends ReactQueryParams {
 
     this.getServerPhoebeVersion(serverHost);
 
-    this.socket = SocketIO("http://"+serverHost, socketOptions);
+    this.socket = SocketIO(protocol+serverHost, socketOptions);
 
     this.socket.on('connect', (data) => {
       this.setState({serverStatus: "connected", serverStartingChildProcess: false, serverAllowAutoconnect: false});

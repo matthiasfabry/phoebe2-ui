@@ -14,6 +14,8 @@ import { fetch } from 'whatwg-fetch';
 export const abortableFetch = ('signal' in new Request('')) ? window.fetch : fetch
 
 let versionCompare = require('semver-compare');  // function that returns -1, 0, 1
+export const protocol = "https://"
+
 
 export function withRouter(Children){
    return (props)=>{

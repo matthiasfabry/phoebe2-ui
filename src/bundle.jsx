@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // import isElectron from 'is-electron'; // https://github.com/cheton/is-electron
 import { PanelGroup } from 'rsuite'; // https://www.npmjs.com/package/react-panelgroup
 import { arrayMove } from '@dnd-kit/sortable';
+import {protocol} from "./common";
 
 // will need to move to array-move if updating react-sortable-hoc, but
 // currently causes npm run build to fail
@@ -230,7 +231,7 @@ class Bundle extends Component {
 
     this.abortGetParamsController = new window.AbortController();
 
-    abortableFetch("http://"+this.props.app.state.serverHost+"/bundle/"+this.state.bundleid, {
+    abortableFetch(protocol+this.props.app.state.serverHost+"/bundle/"+this.state.bundleid, {
       signal: this.abortGetParamsController.signal, method: 'POST', headers: {"content-type": "application/json"},
       body: JSON.stringify({clientid: this.props.app.state.clientid, client_version: this.props.app.state.clientVersion})})
       .then(res => res.json())
