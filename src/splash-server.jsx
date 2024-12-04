@@ -301,6 +301,11 @@ class ServerButton extends Component {
     if (status !== this.state.status) {
       this.setState({status: status});
     }
+
+    if (this.props.autoconnect && this.state.phoebeVersion && this.props.app.state.serverAllowAutoconnect && !this.state.status) {
+      this.props.app.setState({serverAllowAutoconnect: false})
+      return <Navigate to={generatePath(this.props.location)}/>
+    }
   }
   componentWillUnmount() {
     // cancel the server getInfo loop if still running
@@ -350,10 +355,7 @@ class ServerButton extends Component {
     if (e) {e.stopPropagation(); e.preventDefault(); return false;}
   }
   render() {
-    if (this.props.autoconnect && this.state.phoebeVersion && this.props.app.state.serverAllowAutoconnect && !this.state.status) {
-      this.props.app.setState({serverAllowAutoconnect: false})
-      return <Navigate to={generatePath(this.props.location)}/>
-    }
+
 
     let btnClassName = "btn btn-transparent"
     if (!this.state.phoebeVersion) {

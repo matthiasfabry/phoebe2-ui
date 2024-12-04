@@ -703,52 +703,58 @@ class Input extends Component {
       this.props.onChange(value);
     }
   }
+
   componentDidMount() {
     const focusOnMount = !(this.props.disableFocusOnMount || false);
     if (this.refinput.current && focusOnMount) {
       this.refinput.current.select();
     }
   }
-  render() {
-    if (this.props.origValue !== this.state.origValue) {
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+      if (this.props.origValue !== this.state.origValue) {
       // we do this so that a change in origValue from the props will force
       // and update
       this.setState({origValue: this.props.origValue, value: this.props.origValue})
     }
+  }
 
-
+  render() {
+    console.log('input render; props.type', this.props.type)
     if (this.props.type==='choice' || this.props.type==='select') {
       let width = this.props.width || "185px"
       let choices = this.props.choices || [];
       let choicesList = choices.map((choice) => ({value: choice, label: choice}))
-      let isMulti = false
+      let isMulti
+      let defaultValueList
+      let className
+      let valueList
 
       if (this.props.type==='choice') {
-        let className = 'phoebe-parameter-choice'
-        let defaultValueList = {value: this.props.origValue, label: this.props.origValue}
-        let valueList = {value: this.state.value, label: this.state.value} || null
+        className = 'phoebe-parameter-choice'
+        defaultValueList = {value: this.props.origValue, label: this.props.origValue}
+        valueList = {value: this.state.value, label: this.state.value} || null
         isMulti = false
       } else {
         width = "calc(100% - 80px)"
-        let className = 'phoebe-parameter-select'
+        className = 'phoebe-parameter-select'
         if (this.props.origValue) {
-          let defaultValueList = this.props.origValue.map((choice) => ({value: choice, label: choice}))
+          defaultValueList = this.props.origValue.map((choice) => ({value: choice, label: choice}))
         } else {
-          let defaultValueList = null
+          defaultValueList = null
         }
 
         let value = this.state.value
         if (value) {
-          let valueList = value.map((choice) => ({value: choice, label: choice}))
+          valueList = value.map((choice) => ({value: choice, label: choice}))
         } else {
-          let valueList = defaultValueList
+          valueList = defaultValueList
         }
         isMulti = true
       }
 
-      if (this.props.origValue) {
-      } else {
-        let defaultValueList = null
+      if (!this.props.origValue) {
+        defaultValueList = null
       }
 
       if (isMulti) {
@@ -758,7 +764,6 @@ class Input extends Component {
           </span>
         )
       } else {
-
         return (
           <span style={{marginLeft: "10px", marginRight: "10px", width: width, height: "26px", display: "inline-block", verticalAlign: "sub", lineHeight: "1.0"}}>
             <Select options={choicesList} defaultValue={defaultValueList} value={valueList} onChange={this.onChange} defaultMenuIsOpen={!(this.props.disableFocusOnMount || false)} isMulti={isMulti} isClearable={isMulti} closeMenuOnSelect={!isMulti} components={animatedComponents} className={className} classNamePrefix={className}/>
@@ -1283,7 +1288,7 @@ class ChecksReport extends Component {
 
         <FlipMove appearAnimation={false} enterAnimation="fade" leaveAnimation="fade" maintainContainerHeight={true}>
           {this.props.checksReport.map((report,i) => {
-            return <ChecksReportItem report={report} reportKey={i} bundle={this.props.bundle} PSPanel={this.props.PSPanel} app={this.props.app}/>
+            return <ChecksReportItem key={i} report={report} reportKey={i} bundle={this.props.bundle} PSPanel={this.props.PSPanel} app={this.props.app}/>
           })}
         </FlipMove>
       </div>
@@ -1410,14 +1415,10 @@ export class PSPanel extends Component {
           </div>
         }
 
-
         <div style={{paddingTop: "10px", paddingBottom: "100px"}}>
           {this.props.bundle.state.paramsfilteredids.length || Object.keys(this.props.app.queryParams).length ?
-
             orderByTags.map(orderByTag => {
-
-              return <PSGroup app={this.props.app} bundle={this.props.bundle} PSPanel={this} orderBy={orderBy} orderByTag={orderByTag} paramsFiltered={paramsFiltered} enablePSAnimation={enablePSAnimation} PSPanelOnly={this.props.PSPanelOnly} disableFiltering={this.props.disableFiltering || false}/>
-
+              return <PSGroup key={orderByTag} app={this.props.app} bundle={this.props.bundle} PSPanel={this} orderBy={orderBy} orderByTag={orderByTag} paramsFiltered={paramsFiltered} enablePSAnimation={enablePSAnimation} PSPanelOnly={this.props.PSPanelOnly} disableFiltering={this.props.disableFiltering || false}/>
             })
             : <LogoSpinner pltStyle={{backgroundColor: "rgb(43, 113, 177)"}}/>
           }
@@ -1430,8 +1431,7 @@ export class PSPanel extends Component {
 
 export class PSGroup extends Component {
   render() {
-    let parameters = []
-    parameters = mapObject(this.props.paramsFiltered, (uniqueid, param) => {
+    let parameters = mapObject(this.props.paramsFiltered, (uniqueid, param) => {
       if (param[this.props.orderBy]===this.props.orderByTag) {
         return (<Parameter key={uniqueid} uniqueid={uniqueid} uniqueidkey={'PS:'+uniqueid} app={this.props.app} bundle={this.props.bundle} PSPanel={this.props.PSPanel} paramOverview={param} pinnable={!this.props.PSPanelOnly} disableFiltering={this.props.disableFiltering} description={param.description}/>)
       }
